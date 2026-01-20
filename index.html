@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A&W Karaoke Hub Pro</title>
+    <title>A&W Karaoke Hub Ultimate</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -16,6 +16,7 @@
             --error: #ff3333;
             --text-main: #f8fafc;
             --text-dim: #94a3b8;
+            --glass: rgba(30, 30, 36, 0.8);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -25,11 +26,22 @@
             color: var(--text-main);
             font-family: 'Poppins', sans-serif;
             display: flex; justify-content: center; min-height: 100vh; padding: 20px;
+            overflow-x: hidden;
         }
 
-        .container { width: 100%; max-width: 1100px; display: flex; flex-direction: column; gap: 20px; }
+        /* CINEMA MODE OVERLAY */
+        #cinemaOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 90; display: none;
+            pointer-events: none; /* Klik tembus ke player */
+        }
+        body.cinema-mode #cinemaOverlay { display: block; }
+        body.cinema-mode .sticky-search, body.cinema-mode header, body.cinema-mode .nav-tabs { opacity: 0.2; transition: 0.5s; }
+        body.cinema-mode .video-container { z-index: 100; box-shadow: 0 0 50px rgba(0, 229, 255, 0.5); transform: scale(1.02); }
 
-        /* HEADER */
+        .container { width: 100%; max-width: 1200px; display: flex; flex-direction: column; gap: 20px; z-index: 1; }
+
+        /* HEADER & MARQUEE */
         header {
             display: flex; justify-content: space-between; align-items: center;
             padding-bottom: 15px; border-bottom: 2px solid #2a2a35;
@@ -40,12 +52,23 @@
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             text-transform: uppercase; letter-spacing: 2px;
         }
+        
+        .marquee-container {
+            background: #1a1a20; border: 1px solid #333; border-radius: 4px;
+            overflow: hidden; width: 100%; padding: 5px 0; margin-bottom: 10px;
+        }
+        .marquee-text {
+            display: inline-block; white-space: nowrap;
+            padding-left: 100%; animation: marquee 15s linear infinite;
+            font-family: 'Orbitron', monospace; color: var(--accent); font-size: 0.9rem;
+        }
+        @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
 
-        /* PERMANENT SEARCH BAR (Sticky) */
+        /* PERMANENT SEARCH BAR */
         .sticky-search {
-            position: sticky; top: 0; z-index: 100;
+            position: sticky; top: 0; z-index: 80;
             background: var(--bg-dark); padding: 10px 0;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid #333; transition: 0.3s;
         }
         .search-wrapper { position: relative; }
         input[type="text"] {
@@ -54,71 +77,113 @@
             background: #2a2a35; color: white; font-size: 1.1rem;
             transition: 0.3s;
         }
-        input[type="text"]:focus { outline: none; border-color: var(--accent); background: #333; }
+        input[type="text"]:focus { outline: none; border-color: var(--accent); background: #333; box-shadow: 0 0 15px rgba(0,229,255,0.2); }
         .search-btn {
             position: absolute; right: 5px; top: 5px; bottom: 5px; width: 50px;
             background: var(--accent); border: none; border-radius: 50%;
             cursor: pointer; color: black; font-size: 1.2rem; transition: 0.2s;
         }
-        .search-btn:hover { transform: scale(1.1); }
+        .search-btn:hover { transform: scale(1.1); box-shadow: 0 0 10px var(--accent); }
 
         /* PLAYER AREA */
         .stage-wrapper {
-            display: grid; grid-template-columns: 2fr 1fr; gap: 20px;
+            display: grid; grid-template-columns: 2.5fr 1fr; gap: 20px;
         }
-        @media(max-width: 768px) { .stage-wrapper { grid-template-columns: 1fr; } }
+        @media(max-width: 900px) { .stage-wrapper { grid-template-columns: 1fr; } }
 
         .video-container {
             position: relative; width: 100%; padding-top: 56.25%;
             background: #000; border-radius: 12px; overflow: hidden;
-            border: 2px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 2px solid #333; transition: 0.3s;
         }
+        /* Ambient Light Effect */
+        .ambient-glow {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            border-radius: 12px; z-index: -1; opacity: 0.5;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            filter: blur(40px); animation: pulseGlow 5s infinite alternate;
+        }
+        @keyframes pulseGlow { 0% { opacity: 0.3; } 100% { opacity: 0.6; } }
+
         #youtube-player { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
         
-        /* ERROR OVERLAY (Untuk Video Restricted) */
+        /* ERROR OVERLAY */
         .error-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); display: none; flex-direction: column;
+            background: rgba(0,0,0,0.95); display: none; flex-direction: column;
             align-items: center; justify-content: center; text-align: center;
             padding: 20px; z-index: 10;
         }
-        .error-icon { font-size: 3rem; color: var(--error); margin-bottom: 15px; }
         .btn-redirect {
             margin-top: 15px; padding: 10px 20px; background: var(--error);
             color: white; text-decoration: none; border-radius: 5px; font-weight: bold;
         }
 
-        /* SIDE CONTROLS */
+        /* SIDE CONTROLS (ENHANCED) */
         .player-controls {
             background: var(--card-bg); padding: 20px; border-radius: 12px;
             display: flex; flex-direction: column; gap: 15px; border: 1px solid #333;
+            height: 100%; min-height: 400px;
         }
-        .now-playing-title { font-size: 1.1rem; font-weight: 700; color: var(--accent); margin-bottom: 5px; }
-        .control-row { display: flex; gap: 10px; }
+        
+        .now-playing-card {
+            background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px;
+            border-left: 3px solid var(--accent);
+        }
+        .now-playing-label { font-size: 0.7rem; color: var(--text-dim); letter-spacing: 1px; }
+        .now-playing-title { font-size: 1rem; font-weight: 700; color: white; margin-top: 2px; line-height: 1.2; }
+        
+        /* VISUALIZER */
+        .visualizer {
+            display: flex; align-items: flex-end; justify-content: space-between;
+            height: 60px; gap: 3px; margin: 10px 0; opacity: 0.3; transition: 0.3s;
+        }
+        .visualizer.active { opacity: 1; }
+        .bar { width: 100%; background: var(--accent); border-radius: 2px 2px 0 0; animation: equalizer 0s infinite; }
+        .visualizer.active .bar { animation-duration: 0.5s; }
+        
+        @keyframes equalizer {
+            0% { height: 10%; } 50% { height: 100%; background: var(--primary); } 100% { height: 10%; }
+        }
+
+        .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .ctrl-btn {
-            background: #333; color: white; border: none; padding: 10px; border-radius: 8px;
-            cursor: pointer; flex: 1; transition: 0.2s;
+            background: #333; color: white; border: none; padding: 12px; border-radius: 8px;
+            cursor: pointer; transition: 0.2s; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 5px;
         }
         .ctrl-btn:hover { background: var(--accent); color: black; }
-        .speed-control { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: var(--text-dim); }
-        input[type=range] { accent-color: var(--accent); flex: 1; }
+        .ctrl-btn.primary { background: var(--primary); }
+        .ctrl-btn.primary:hover { background: white; color: var(--primary); }
 
-        /* TABS & CONTENT */
+        .slider-group { margin-top: 5px; }
+        .slider-label { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-dim); margin-bottom: 5px; }
+        input[type=range] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+
+        /* STATS BOX */
+        .stats-box {
+            margin-top: auto; padding-top: 15px; border-top: 1px solid #333;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .stat-item { text-align: center; }
+        .stat-val { font-family: 'Orbitron'; font-size: 1.2rem; color: var(--accent); }
+        .stat-lbl { font-size: 0.7rem; color: var(--text-dim); }
+
+        /* TABS */
         .nav-tabs { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; margin-top: 20px; }
         .nav-btn {
             background: var(--card-bg); color: var(--text-dim); border: 1px solid #333;
-            padding: 10px 20px; border-radius: 30px; cursor: pointer; transition: 0.3s;
+            padding: 10px 25px; border-radius: 30px; cursor: pointer; transition: 0.3s;
             font-weight: 600; white-space: nowrap; display: flex; align-items: center; gap: 8px;
         }
         .nav-btn:hover, .nav-btn.active {
-            background: var(--primary); color: white; border-color: var(--primary);
+            background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 0 10px rgba(255, 0, 85, 0.3);
         }
 
         .content-section { display: none; animation: fadeIn 0.3s; margin-top: 15px; }
         .content-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* LISTS & GRIDS */
+        /* GRIDS & LISTS */
         .song-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
         .song-card {
             background: var(--card-bg); border-radius: 10px; overflow: hidden;
@@ -131,59 +196,108 @@
         .list-view { list-style: none; display: flex; flex-direction: column; gap: 10px; }
         .list-item {
             display: flex; align-items: center; gap: 15px; background: var(--card-bg);
-            padding: 10px; border-radius: 8px; border: 1px solid #333;
+            padding: 10px; border-radius: 8px; border: 1px solid #333; transition: 0.2s;
         }
-        .list-item:hover { border-color: var(--accent); }
+        .list-item:hover { border-color: var(--accent); background: #25252d; }
         .list-thumb { width: 80px; height: 45px; object-fit: cover; border-radius: 4px; cursor: pointer; }
-        
         .empty-msg { text-align: center; color: var(--text-dim); padding: 40px; }
-        .action-btn { background: transparent; border: none; color: var(--text-dim); cursor: pointer; font-size: 1rem; }
-        .action-btn:hover { color: white; }
+        .action-btn { background: transparent; border: none; color: var(--text-dim); cursor: pointer; font-size: 1.1rem; padding: 5px; }
+        .action-btn:hover { color: white; transform: scale(1.1); }
         .action-btn.liked { color: var(--primary); }
 
     </style>
 </head>
 <body>
 
+    <div id="cinemaOverlay"></div>
+
     <div class="container">
         <header>
             <div class="brand">A&W <span style="font-size:0.6em; color:var(--text-main);">KARAOKE HUB</span></div>
+            <div style="font-size:0.8rem; color:var(--text-dim);"><i class="fas fa-music"></i> Pro Edition</div>
         </header>
 
+        <div class="marquee-container">
+            <div class="marquee-text" id="marqueeText">
+                *** SELAMAT DATANG DI A&W KARAOKE HUB *** CARI LAGU FAVORITMU DAN NYANYIKAN SEKARANG *** ANTRIAN KOSONG ***
+            </div>
+        </div>
+
         <div class="stage-wrapper">
-            <div class="video-container">
-                <div id="youtube-player"></div>
-                <div id="errorOverlay" class="error-overlay">
-                    <i class="fas fa-exclamation-triangle error-icon"></i>
-                    <h3>Ups! Video Dibatasi</h3>
-                    <p>Pemilik video menonaktifkan pemutaran di situs lain.</p>
-                    <a id="fallbackLink" href="#" target="_blank" class="btn-redirect">
-                        <i class="fab fa-youtube"></i> Tonton di YouTube
-                    </a>
-                    <button onclick="playNextInQueue()" style="margin-top:10px; background:transparent; border:1px solid white; color:white; padding:5px 10px; cursor:pointer; border-radius:4px;">Lewati Lagu Ini</button>
+            <div style="position:relative;">
+                <div class="ambient-glow"></div> <div class="video-container">
+                    <div id="youtube-player"></div>
+                    <div id="errorOverlay" class="error-overlay">
+                        <i class="fas fa-exclamation-triangle error-icon" style="font-size:3rem; color:var(--error); margin-bottom:15px;"></i>
+                        <h3>Video Dibatasi</h3>
+                        <p>Pemilik video tidak mengizinkan pemutaran di sini.</p>
+                        <a id="fallbackLink" href="#" target="_blank" class="btn-redirect">
+                            <i class="fab fa-youtube"></i> Buka YouTube
+                        </a>
+                        <button onclick="playNextInQueue()" style="margin-top:15px; background:none; border:1px solid white; color:white; padding:5px 15px; cursor:pointer; border-radius:4px;">Lewati Lagu</button>
+                    </div>
                 </div>
             </div>
 
             <div class="player-controls">
-                <div>
-                    <div style="font-size:0.8rem; color:var(--text-dim);">SEDANG DIPUTAR:</div>
-                    <div class="now-playing-title" id="nowPlayingTitle">Siap Bernyanyi...</div>
+                
+                <div class="now-playing-card">
+                    <div class="now-playing-label">SEDANG DIPUTAR</div>
+                    <div class="now-playing-title" id="nowPlayingTitle">Menunggu Pilihan...</div>
                 </div>
-                <div class="control-row">
-                    <button class="ctrl-btn" onclick="replaySong()"><i class="fas fa-redo"></i> Ulang</button>
-                    <button class="ctrl-btn" onclick="playNextInQueue()"><i class="fas fa-step-forward"></i> Lewati</button>
+
+                <div class="visualizer" id="visualizer">
+                    <div class="bar" style="animation-delay: 0.1s"></div>
+                    <div class="bar" style="animation-delay: 0.3s"></div>
+                    <div class="bar" style="animation-delay: 0.5s"></div>
+                    <div class="bar" style="animation-delay: 0.2s"></div>
+                    <div class="bar" style="animation-delay: 0.4s"></div>
+                    <div class="bar" style="animation-delay: 0.1s"></div>
+                    <div class="bar" style="animation-delay: 0.3s"></div>
+                    <div class="bar" style="animation-delay: 0.5s"></div>
                 </div>
-                <div class="speed-control">
-                    <i class="fas fa-tachometer-alt"></i>
+
+                <div class="control-grid">
+                    <button class="ctrl-btn" onclick="toggleCinemaMode()"><i class="fas fa-lightbulb"></i> Cinema</button>
+                    <button class="ctrl-btn" onclick="replaySong()"><i class="fas fa-redo"></i> Replay</button>
+                </div>
+                
+                <button class="ctrl-btn primary" onclick="playNextInQueue()" style="width:100%; font-weight:bold;">
+                    <i class="fas fa-step-forward"></i> SKIP / NEXT SONG
+                </button>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span><i class="fas fa-tachometer-alt"></i> Tempo</span>
+                        <span id="speedVal">1.0x</span>
+                    </div>
                     <input type="range" min="0.5" max="1.5" step="0.05" value="1" oninput="changeSpeed(this.value)">
-                    <span id="speedVal">1.0x</span>
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span><i class="fas fa-volume-up"></i> Volume</span>
+                        <span id="volVal">100%</span>
+                    </div>
+                    <input type="range" min="0" max="100" value="100" oninput="changeVolume(this.value)">
+                </div>
+
+                <div class="stats-box">
+                    <div class="stat-item">
+                        <div class="stat-val" id="queueCountDisplay">0</div>
+                        <div class="stat-lbl">Antrian</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-val" id="sungCount">0</div>
+                        <div class="stat-lbl">Selesai</div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="sticky-search">
             <div class="search-wrapper">
-                <input type="text" id="searchInput" placeholder="Cari lagu karaoke apapun..." onkeypress="handleEnter(event)">
+                <input type="text" id="searchInput" placeholder="Cari artis atau judul lagu..." onkeypress="handleEnter(event)">
                 <button class="search-btn" onclick="performSearch()"><i class="fas fa-search"></i></button>
             </div>
         </div>
@@ -191,12 +305,12 @@
         <div class="nav-tabs">
             <button class="nav-btn active" onclick="switchTab('home')"><i class="fas fa-home"></i> Home</button>
             <button class="nav-btn" onclick="switchTab('search')"><i class="fas fa-list"></i> Hasil Cari</button>
-            <button class="nav-btn" onclick="switchTab('queue')"><i class="fas fa-list-ol"></i> Antrian (<span id="queueCount">0</span>)</button>
+            <button class="nav-btn" onclick="switchTab('queue')"><i class="fas fa-list-ol"></i> Antrian</button>
             <button class="nav-btn" onclick="switchTab('favorites')"><i class="fas fa-heart"></i> Favorit</button>
         </div>
 
         <div id="home" class="content-section active">
-            <h3 style="margin-bottom:15px; color:var(--accent);">Lagu Pilihan (Top Hits)</h3>
+            <h3 style="margin-bottom:15px; color:var(--accent);">🔥 Top Hits Karaoke</h3>
             <div class="song-grid" id="featuredGrid"></div>
         </div>
 
@@ -208,15 +322,16 @@
 
         <div id="queue" class="content-section">
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                <h3>Antrian Lagu</h3>
+                <h3><i class="fas fa-list-ol"></i> Daftar Antrian</h3>
                 <button onclick="clearQueue()" style="color:var(--error); background:none; border:none; cursor:pointer;">Hapus Semua</button>
             </div>
             <ul class="list-view" id="queueList">
-                <li class="empty-msg">Antrian kosong.</li>
+                <li class="empty-msg">Antrian kosong. Tambahkan lagu!</li>
             </ul>
         </div>
 
         <div id="favorites" class="content-section">
+            <h3 style="margin-bottom:15px; color:var(--primary);">❤️ Koleksi Favorit</h3>
             <div class="song-grid" id="favoritesGrid"></div>
         </div>
 
@@ -234,15 +349,18 @@
             { id: "hT_nvWreIhg", title: "Counting Stars", artist: "OneRepublic" },
             { id: "lp-EO5I60KA", title: "Thinking Out Loud", artist: "Ed Sheeran" },
             { id: "YQHsXMglC9A", title: "Hello", artist: "Adele" },
-            { id: "RtBbinpK5XI", title: "Kangen", artist: "Dewa 19" }
+            { id: "RtBbinpK5XI", title: "Kangen", artist: "Dewa 19" },
+            { id: "fJ9rUzIMcZQ", title: "Bohemian Rhapsody", artist: "Queen" },
+            { id: "9f06QZCVUHg", title: "Monokrom", artist: "Tulus" }
         ];
 
         let player;
         let queue = [];
         let favorites = JSON.parse(localStorage.getItem('aw_favorites')) || [];
         let currentVideoId = '';
+        let songsSungSession = 0;
 
-        // ================= YOUTUBE API & ERROR HANDLING =================
+        // ================= YOUTUBE API =================
         const tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         const firstScriptTag = document.getElementsByTagName('script')[0];
@@ -255,50 +373,56 @@
                 playerVars: { 'autoplay': 0, 'rel': 0, 'modestbranding': 1 },
                 events: {
                     'onStateChange': onPlayerStateChange,
-                    'onError': onPlayerError // Deteksi Error di sini
+                    'onError': onPlayerError
                 }
             });
         }
 
         function onPlayerStateChange(event) {
-            if (event.data === YT.PlayerState.ENDED) playNextInQueue();
+            const visualizer = document.getElementById('visualizer');
+            
+            // 1 = Playing, 2 = Paused, 0 = Ended
+            if (event.data === YT.PlayerState.PLAYING) {
+                visualizer.classList.add('active');
+            } else {
+                visualizer.classList.remove('active');
+            }
+
+            if (event.data === YT.PlayerState.ENDED) {
+                songsSungSession++;
+                document.getElementById('sungCount').textContent = songsSungSession;
+                playNextInQueue();
+            }
         }
 
-        // FUNGSI PENTING: MENANGANI VIDEO YANG DIBATASI
         function onPlayerError(event) {
-            // Error 150 atau 101 artinya video tidak boleh di-embed
             if (event.data === 150 || event.data === 101) {
-                const overlay = document.getElementById('errorOverlay');
-                const link = document.getElementById('fallbackLink');
-                
-                // Siapkan link youtube asli
-                link.href = `https://www.youtube.com/watch?v=${currentVideoId}`;
-                
-                // Tampilkan pesan error menutupi player
-                overlay.style.display = 'flex';
+                document.getElementById('errorOverlay').style.display = 'flex';
+                document.getElementById('fallbackLink').href = `https://www.youtube.com/watch?v=${currentVideoId}`;
             }
         }
 
         // ================= PLAYER LOGIC =================
         function playSong(song, instant = false) {
-            // Sembunyikan error overlay jika ada
             document.getElementById('errorOverlay').style.display = 'none';
 
             if (instant) {
                 currentVideoId = song.id;
                 player.loadVideoById(song.id);
                 document.getElementById('nowPlayingTitle').textContent = song.title;
+                updateMarquee(`SEDANG MEMUTAR: ${song.title} - ${song.artist || ''}`);
             } else {
                 queue.push(song);
                 updateQueueUI();
                 
-                // Animasi kecil di tab Queue untuk feedback
+                // Feedback visual tombol Queue tab
                 const qTab = document.querySelector("button[onclick*='queue']");
-                qTab.style.transform = "scale(1.2)";
-                setTimeout(() => qTab.style.transform = "scale(1)", 200);
+                qTab.style.background = "var(--accent)"; qTab.style.color="black";
+                setTimeout(() => { qTab.style.background = ""; qTab.style.color=""; }, 300);
 
+                // Auto play jika player diam
                 let state = player.getPlayerState();
-                if (state === YT.PlayerState.UNSTARTED || state === YT.PlayerState.CUED || state === YT.PlayerState.ENDED || state === -1) {
+                if (state === -1 || state === 0 || state === 5) {
                     playNextInQueue();
                 }
             }
@@ -311,27 +435,47 @@
                 currentVideoId = nextSong.id;
                 player.loadVideoById(nextSong.id);
                 document.getElementById('nowPlayingTitle').textContent = nextSong.title;
+                updateMarquee(`SELANJUTNYA: ${nextSong.title}`);
                 updateQueueUI();
             } else {
                 document.getElementById('nowPlayingTitle').textContent = "Antrian Habis.";
+                updateMarquee("*** ANTRIAN KOSONG - SILAKAN PILIH LAGU ***");
+                // Stop visualizer
+                document.getElementById('visualizer').classList.remove('active');
             }
         }
 
         function replaySong() { player.seekTo(0); player.playVideo(); }
-        function changeSpeed(val) { player.setPlaybackRate(parseFloat(val)); document.getElementById('speedVal').textContent = val + "x"; }
+        
+        function changeSpeed(val) { 
+            player.setPlaybackRate(parseFloat(val)); 
+            document.getElementById('speedVal').textContent = val + "x"; 
+        }
 
-        // ================= UI & SEARCH =================
+        function changeVolume(val) {
+            player.setVolume(val);
+            document.getElementById('volVal').textContent = val + "%";
+        }
+
+        function toggleCinemaMode() {
+            document.body.classList.toggle('cinema-mode');
+        }
+
+        function updateMarquee(text) {
+            const marquee = document.getElementById('marqueeText');
+            marquee.textContent = `*** ${text} *** ${text} *** ${text} ***`;
+        }
+
+        // ================= SEARCH & UI =================
         function handleEnter(e) { if (e.key === 'Enter') performSearch(); }
 
         async function performSearch() {
             const query = document.getElementById('searchInput').value.trim();
             const list = document.getElementById('searchResults');
-            
-            // Otomatis pindah ke tab Hasil Cari
             switchTab('search'); 
 
             if (!query) return;
-            list.innerHTML = '<li class="empty-msg">🔍 Mencari...</li>';
+            list.innerHTML = '<li class="empty-msg">🔍 Mencari di server YouTube...</li>';
 
             try {
                 const searchQ = encodeURIComponent(query + " karaoke no vocal");
@@ -344,8 +488,7 @@
                 
                 list.innerHTML = '';
                 if(data.items.length === 0) {
-                    list.innerHTML = '<li class="empty-msg">Tidak ditemukan.</li>';
-                    return;
+                    list.innerHTML = '<li class="empty-msg">Tidak ditemukan.</li>'; return;
                 }
 
                 data.items.forEach(item => {
@@ -354,7 +497,7 @@
                 });
 
             } catch (error) {
-                list.innerHTML = `<li class="empty-msg" style="color:red">Error API: ${error.message}</li>`;
+                list.innerHTML = `<li class="empty-msg" style="color:red">Error: ${error.message}</li>`;
             }
         }
 
@@ -369,7 +512,7 @@
             if (tabId === 'favorites') renderFavorites();
         }
 
-        // ================= HELPER RENDERERS =================
+        // ================= RENDERERS =================
         function createSongCard(song) {
             const thumbUrl = `https://img.youtube.com/vi/${song.id}/mqdefault.jpg`;
             const div = document.createElement('div');
@@ -377,10 +520,10 @@
             div.innerHTML = `
                 <img src="${thumbUrl}" class="card-thumb" onclick='playSong(${JSON.stringify(song)}, true)'>
                 <div class="card-info">
-                    <div style="font-weight:600; font-size:0.9rem; margin-bottom:5px;">${song.title}</div>
-                    <div style="display:flex; justify-content:space-between;">
-                        <button class="action-btn" onclick='toggleFavorite(${JSON.stringify(song)})'><i class="${isFavorite(song.id) ? 'fas' : 'far'} fa-heart"></i></button>
-                        <button class="action-btn" onclick='playSong(${JSON.stringify(song)}, false)'><i class="fas fa-plus-circle"></i> Queue</button>
+                    <div style="font-weight:600; font-size:0.9rem; margin-bottom:5px; height:40px; overflow:hidden;">${song.title}</div>
+                    <div style="display:flex; justify-content:space-between; margin-top:5px;">
+                        <button class="action-btn" onclick='toggleFavorite(${JSON.stringify(song)})' title="Favorit"><i class="${isFavorite(song.id) ? 'fas' : 'far'} fa-heart"></i></button>
+                        <button class="action-btn" onclick='playSong(${JSON.stringify(song)}, false)' title="Antrian"><i class="fas fa-plus-circle"></i></button>
                     </div>
                 </div>
             `;
@@ -397,8 +540,8 @@
                     <div style="font-weight:600;">${song.title}</div>
                     <small style="color:#888;">${song.artist || ''}</small>
                 </div>
-                <div style="display:flex; gap:10px;">
-                    ${type === 'search' ? `<button class="action-btn" onclick='playSong(${JSON.stringify(song)}, false)' title="Antrian"><i class="fas fa-plus"></i></button>` : ''}
+                <div style="display:flex; gap:15px; padding-right:10px;">
+                    ${type === 'search' ? `<button class="action-btn" onclick='playSong(${JSON.stringify(song)}, false)'><i class="fas fa-plus"></i></button>` : ''}
                     <button class="action-btn ${isFavorite(song.id) ? 'liked' : ''}" onclick='toggleFavorite(${JSON.stringify(song)})'><i class="${isFavorite(song.id) ? 'fas' : 'far'} fa-heart"></i></button>
                 </div>
             `;
@@ -406,7 +549,7 @@
         }
 
         function updateQueueUI() {
-            document.getElementById('queueCount').textContent = queue.length;
+            document.getElementById('queueCountDisplay').textContent = queue.length;
             const list = document.getElementById('queueList');
             list.innerHTML = '';
             if (queue.length === 0) { list.innerHTML = '<li class="empty-msg">Antrian kosong.</li>'; return; }
@@ -416,7 +559,7 @@
                 li.innerHTML = `
                     <b style="color:var(--accent); margin-right:10px;">${i+1}</b>
                     <div style="flex:1;">${song.title}</div>
-                    <button class="action-btn" onclick="queue.splice(${i},1); updateQueueUI();"><i class="fas fa-trash"></i></button>
+                    <button class="action-btn" onclick="queue.splice(${i},1); updateQueueUI();" style="color:var(--error);"><i class="fas fa-trash"></i></button>
                 `;
                 list.appendChild(li);
             });
@@ -426,7 +569,8 @@
             const idx = favorites.findIndex(f => f.id === song.id);
             if (idx === -1) favorites.push(song); else favorites.splice(idx, 1);
             localStorage.setItem('aw_favorites', JSON.stringify(favorites));
-            renderHome(); renderFavorites(); if(document.getElementById('search').classList.contains('active')) performSearch(); 
+            renderHome(); renderFavorites(); 
+            if(document.getElementById('search').classList.contains('active')) performSearch(); 
         }
         function isFavorite(id) { return favorites.some(f => f.id === id); }
         function renderFavorites() {
