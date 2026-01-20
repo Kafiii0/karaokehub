@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A&W Karaoke Hub Ultimate</title>
+    <title>A&W Karaoke Hub Ultimate Timekeeper</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -32,16 +32,16 @@
         /* CINEMA MODE OVERLAY */
         #cinemaOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 90; display: none;
-            pointer-events: none; /* Klik tembus ke player */
+            background: rgba(0,0,0,0.95); z-index: 90; display: none;
+            pointer-events: none;
         }
         body.cinema-mode #cinemaOverlay { display: block; }
-        body.cinema-mode .sticky-search, body.cinema-mode header, body.cinema-mode .nav-tabs { opacity: 0.2; transition: 0.5s; }
-        body.cinema-mode .video-container { z-index: 100; box-shadow: 0 0 50px rgba(0, 229, 255, 0.5); transform: scale(1.02); }
+        body.cinema-mode .sticky-search, body.cinema-mode header, body.cinema-mode .nav-tabs { opacity: 0.1; transition: 0.5s; }
+        body.cinema-mode .video-container { z-index: 100; box-shadow: 0 0 80px rgba(0, 229, 255, 0.3); transform: scale(1.05); }
 
         .container { width: 100%; max-width: 1200px; display: flex; flex-direction: column; gap: 20px; z-index: 1; }
 
-        /* HEADER & MARQUEE */
+        /* HEADER & CLOCK */
         header {
             display: flex; justify-content: space-between; align-items: center;
             padding-bottom: 15px; border-bottom: 2px solid #2a2a35;
@@ -52,19 +52,34 @@
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             text-transform: uppercase; letter-spacing: 2px;
         }
+
+        /* LIVE CLOCK STYLE */
+        .live-clock {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            color: var(--accent);
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+            background: rgba(0,0,0,0.3);
+            padding: 5px 15px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .live-clock i { font-size: 1rem; color: var(--text-dim); }
         
+        /* MARQUEE */
         .marquee-container {
             background: #1a1a20; border: 1px solid #333; border-radius: 4px;
             overflow: hidden; width: 100%; padding: 5px 0; margin-bottom: 10px;
         }
         .marquee-text {
             display: inline-block; white-space: nowrap;
-            padding-left: 100%; animation: marquee 15s linear infinite;
+            padding-left: 100%; animation: marquee 20s linear infinite;
             font-family: 'Orbitron', monospace; color: var(--accent); font-size: 0.9rem;
         }
         @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
 
-        /* PERMANENT SEARCH BAR */
+        /* STICKY SEARCH */
         .sticky-search {
             position: sticky; top: 0; z-index: 80;
             background: var(--bg-dark); padding: 10px 0;
@@ -85,7 +100,7 @@
         }
         .search-btn:hover { transform: scale(1.1); box-shadow: 0 0 10px var(--accent); }
 
-        /* PLAYER AREA */
+        /* PLAYER LAYOUT */
         .stage-wrapper {
             display: grid; grid-template-columns: 2.5fr 1fr; gap: 20px;
         }
@@ -96,7 +111,6 @@
             background: #000; border-radius: 12px; overflow: hidden;
             border: 2px solid #333; transition: 0.3s;
         }
-        /* Ambient Light Effect */
         .ambient-glow {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             border-radius: 12px; z-index: -1; opacity: 0.5;
@@ -119,11 +133,11 @@
             color: white; text-decoration: none; border-radius: 5px; font-weight: bold;
         }
 
-        /* SIDE CONTROLS (ENHANCED) */
+        /* CONTROLS SIDEBAR */
         .player-controls {
             background: var(--card-bg); padding: 20px; border-radius: 12px;
             display: flex; flex-direction: column; gap: 15px; border: 1px solid #333;
-            height: 100%; min-height: 400px;
+            height: 100%; min-height: 450px; /* Sedikit dipertinggi untuk stats */
         }
         
         .now-playing-card {
@@ -133,18 +147,14 @@
         .now-playing-label { font-size: 0.7rem; color: var(--text-dim); letter-spacing: 1px; }
         .now-playing-title { font-size: 1rem; font-weight: 700; color: white; margin-top: 2px; line-height: 1.2; }
         
-        /* VISUALIZER */
         .visualizer {
             display: flex; align-items: flex-end; justify-content: space-between;
-            height: 60px; gap: 3px; margin: 10px 0; opacity: 0.3; transition: 0.3s;
+            height: 50px; gap: 3px; margin: 10px 0; opacity: 0.3; transition: 0.3s;
         }
         .visualizer.active { opacity: 1; }
         .bar { width: 100%; background: var(--accent); border-radius: 2px 2px 0 0; animation: equalizer 0s infinite; }
         .visualizer.active .bar { animation-duration: 0.5s; }
-        
-        @keyframes equalizer {
-            0% { height: 10%; } 50% { height: 100%; background: var(--primary); } 100% { height: 10%; }
-        }
+        @keyframes equalizer { 0% { height: 10%; } 50% { height: 100%; background: var(--primary); } 100% { height: 10%; } }
 
         .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .ctrl-btn {
@@ -159,14 +169,14 @@
         .slider-label { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-dim); margin-bottom: 5px; }
         input[type=range] { width: 100%; accent-color: var(--accent); cursor: pointer; }
 
-        /* STATS BOX */
+        /* STATS BOX (UPDATED) */
         .stats-box {
             margin-top: auto; padding-top: 15px; border-top: 1px solid #333;
-            display: flex; justify-content: space-between; align-items: center;
+            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px;
         }
         .stat-item { text-align: center; }
-        .stat-val { font-family: 'Orbitron'; font-size: 1.2rem; color: var(--accent); }
-        .stat-lbl { font-size: 0.7rem; color: var(--text-dim); }
+        .stat-val { font-family: 'Orbitron'; font-size: 1.1rem; color: var(--accent); }
+        .stat-lbl { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; }
 
         /* TABS */
         .nav-tabs { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; margin-top: 20px; }
@@ -181,7 +191,6 @@
 
         .content-section { display: none; animation: fadeIn 0.3s; margin-top: 15px; }
         .content-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* GRIDS & LISTS */
         .song-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
@@ -213,19 +222,26 @@
 
     <div class="container">
         <header>
-            <div class="brand">A&W <span style="font-size:0.6em; color:var(--text-main);">KARAOKE HUB</span></div>
-            <div style="font-size:0.8rem; color:var(--text-dim);"><i class="fas fa-music"></i> Pro Edition</div>
+            <div>
+                <div class="brand">A&W <span style="font-size:0.6em; color:var(--text-main);">KARAOKE HUB</span></div>
+                <div style="font-size:0.7rem; color:var(--text-dim);">Professional System v3.5</div>
+            </div>
+            
+            <div class="live-clock" id="clockDisplay">
+                <i class="far fa-clock"></i> <span>00:00:00</span>
+            </div>
         </header>
 
         <div class="marquee-container">
             <div class="marquee-text" id="marqueeText">
-                *** SELAMAT DATANG DI A&W KARAOKE HUB *** CARI LAGU FAVORITMU DAN NYANYIKAN SEKARANG *** ANTRIAN KOSONG ***
+                *** SELAMAT DATANG DI A&W KARAOKE HUB *** ANTRIAN KOSONG - SILAKAN PILIH LAGU ***
             </div>
         </div>
 
         <div class="stage-wrapper">
             <div style="position:relative;">
-                <div class="ambient-glow"></div> <div class="video-container">
+                <div class="ambient-glow"></div>
+                <div class="video-container">
                     <div id="youtube-player"></div>
                     <div id="errorOverlay" class="error-overlay">
                         <i class="fas fa-exclamation-triangle error-icon" style="font-size:3rem; color:var(--error); margin-bottom:15px;"></i>
@@ -267,18 +283,12 @@
                 </button>
 
                 <div class="slider-group">
-                    <div class="slider-label">
-                        <span><i class="fas fa-tachometer-alt"></i> Tempo</span>
-                        <span id="speedVal">1.0x</span>
-                    </div>
+                    <div class="slider-label"><span><i class="fas fa-tachometer-alt"></i> Tempo</span><span id="speedVal">1.0x</span></div>
                     <input type="range" min="0.5" max="1.5" step="0.05" value="1" oninput="changeSpeed(this.value)">
                 </div>
 
                 <div class="slider-group">
-                    <div class="slider-label">
-                        <span><i class="fas fa-volume-up"></i> Volume</span>
-                        <span id="volVal">100%</span>
-                    </div>
+                    <div class="slider-label"><span><i class="fas fa-volume-up"></i> Volume</span><span id="volVal">100%</span></div>
                     <input type="range" min="0" max="100" value="100" oninput="changeVolume(this.value)">
                 </div>
 
@@ -289,7 +299,11 @@
                     </div>
                     <div class="stat-item">
                         <div class="stat-val" id="sungCount">0</div>
-                        <div class="stat-lbl">Selesai</div>
+                        <div class="stat-lbl">Lagu Selesai</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-val" id="totalDurationDisplay">0m</div>
+                        <div class="stat-lbl">Total Durasi</div>
                     </div>
                 </div>
             </div>
@@ -359,6 +373,44 @@
         let favorites = JSON.parse(localStorage.getItem('aw_favorites')) || [];
         let currentVideoId = '';
         let songsSungSession = 0;
+        
+        // --- NEW VARIABLES FOR TIMEKEEPER ---
+        let totalSecondsSung = 0;
+        let singingInterval;
+
+        // ================= CLOCK & TIMER LOGIC =================
+        
+        // 1. Live Clock
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('id-ID', { hour12: false });
+            document.querySelector('#clockDisplay span').textContent = timeString;
+        }
+        setInterval(updateClock, 1000);
+        updateClock(); // Run immediately
+
+        // 2. Total Singing Duration Timer
+        function startSingingTimer() {
+            stopSingingTimer(); // Prevent duplicates
+            singingInterval = setInterval(() => {
+                totalSecondsSung++;
+                updateDurationUI();
+            }, 1000);
+        }
+
+        function stopSingingTimer() {
+            clearInterval(singingInterval);
+        }
+
+        function updateDurationUI() {
+            // Convert seconds to readable format (e.g., 5m 30s)
+            const minutes = Math.floor(totalSecondsSung / 60);
+            const seconds = totalSecondsSung % 60;
+            let text = `${minutes}m`;
+            if(minutes < 60) text = `${minutes}m ${seconds}s`; // Show seconds if under 1 hour
+            
+            document.getElementById('totalDurationDisplay').textContent = text;
+        }
 
         // ================= YOUTUBE API =================
         const tag = document.createElement('script');
@@ -381,16 +433,19 @@
         function onPlayerStateChange(event) {
             const visualizer = document.getElementById('visualizer');
             
-            // 1 = Playing, 2 = Paused, 0 = Ended
+            // LOGIC FOR TIMER & VISUALIZER
             if (event.data === YT.PlayerState.PLAYING) {
                 visualizer.classList.add('active');
+                startSingingTimer(); // Start counting duration
             } else {
                 visualizer.classList.remove('active');
+                stopSingingTimer(); // Pause counting duration
             }
 
             if (event.data === YT.PlayerState.ENDED) {
                 songsSungSession++;
                 document.getElementById('sungCount').textContent = songsSungSession;
+                stopSingingTimer();
                 playNextInQueue();
             }
         }
@@ -399,6 +454,7 @@
             if (event.data === 150 || event.data === 101) {
                 document.getElementById('errorOverlay').style.display = 'flex';
                 document.getElementById('fallbackLink').href = `https://www.youtube.com/watch?v=${currentVideoId}`;
+                stopSingingTimer();
             }
         }
 
@@ -415,12 +471,11 @@
                 queue.push(song);
                 updateQueueUI();
                 
-                // Feedback visual tombol Queue tab
+                // Feedback visual
                 const qTab = document.querySelector("button[onclick*='queue']");
                 qTab.style.background = "var(--accent)"; qTab.style.color="black";
                 setTimeout(() => { qTab.style.background = ""; qTab.style.color=""; }, 300);
 
-                // Auto play jika player diam
                 let state = player.getPlayerState();
                 if (state === -1 || state === 0 || state === 5) {
                     playNextInQueue();
@@ -440,8 +495,8 @@
             } else {
                 document.getElementById('nowPlayingTitle').textContent = "Antrian Habis.";
                 updateMarquee("*** ANTRIAN KOSONG - SILAKAN PILIH LAGU ***");
-                // Stop visualizer
                 document.getElementById('visualizer').classList.remove('active');
+                stopSingingTimer();
             }
         }
 
