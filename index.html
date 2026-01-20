@@ -3,429 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KaraokeHub Player - Kafiii0</title>
+    <title>YouTube Hybrid Karaoke</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            /* Tema Cyber Blue */
-            --bg-dark: #020617;
-            --bg-panel: #0f172a;
-            --primary: #3b82f6; /* Blue 500 */
-            --accent: #06b6d4;  /* Cyan 500 */
+            --bg-dark: #0f0f13;
+            --primary: #ff0055; /* Youtube Red */
+            --accent: #ffffff;
             --text-main: #f8fafc;
             --text-dim: #94a3b8;
-            --glow: 0 0 20px rgba(59, 130, 246, 0.5);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background: radial-gradient(circle at top, #1e293b 0%, var(--bg-dark) 100%);
+            background-color: var(--bg-dark);
             color: var(--text-main);
             font-family: 'Poppins', sans-serif;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
+            display: flex; justify-content: center; min-height: 100vh; padding: 20px;
         }
 
-        .app-container {
-            width: 100%;
-            max-width: 1000px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+        .container { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 20px; }
 
-        /* --- HEADER --- */
+        /* HEADER */
         header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--bg-panel);
-            padding: 15px 25px;
-            border-radius: 15px;
-            border: 1px solid #1e293b;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            text-align: center; padding: 15px; border-bottom: 1px solid #333;
+        }
+        header h1 {
+            font-family: 'Orbitron', sans-serif; color: var(--primary); 
+            text-transform: uppercase; letter-spacing: 2px;
         }
 
-        .brand h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.5rem;
-            background: linear-gradient(to right, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .repo-badge {
-            font-size: 0.8rem;
-            background: #1e293b;
-            padding: 5px 12px;
-            border-radius: 20px;
-            border: 1px solid var(--primary);
-            color: var(--accent);
-            display: flex; align-items: center; gap: 8px;
-        }
-
-        /* --- VIDEO PLAYER --- */
+        /* PLAYER AREA */
         .stage-area {
-            position: relative;
-            width: 100%;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
-            background: #000;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 2px solid #334155;
-            box-shadow: var(--glow);
+            position: relative; width: 100%; padding-top: 56.25%; /* 16:9 */
+            background: #000; border-radius: 12px; overflow: hidden;
+            border: 2px solid #333;
         }
+        #youtube-player { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
-        video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; }
-
-        /* --- CONTROLS --- */
-        .control-bar {
-            background: var(--bg-panel);
-            padding: 20px;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            border: 1px solid #1e293b;
+        /* SEARCH BAR */
+        .search-container {
+            display: flex; gap: 10px;
         }
-
-        .main-transport {
-            display: flex; justify-content: center; align-items: center; gap: 20px;
+        input[type="text"] {
+            flex-grow: 1; padding: 15px; border-radius: 8px; border: none;
+            background: #1e1e24; color: white; font-size: 1rem;
         }
-
-        .btn-transport {
-            background: transparent; border: none; color: var(--text-main);
-            font-size: 1.5rem; cursor: pointer; transition: 0.2s;
-        }
-        .btn-transport:hover { color: var(--accent); transform: scale(1.1); }
+        input[type="text"]:focus { outline: 2px solid var(--primary); }
         
-        .btn-play {
-            width: 60px; height: 60px;
-            background: var(--primary);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 15px var(--primary);
-        }
-        .btn-play:hover { background: var(--accent); box-shadow: 0 0 25px var(--accent); }
-
-        .active-mode { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
-
-        /* --- PLAYLIST & UPLOAD --- */
-        .playlist-container {
-            background: var(--bg-panel);
-            border-radius: 12px;
-            padding: 20px;
-            flex-grow: 1;
-            display: flex; flex-direction: column; gap: 15px;
-            border: 1px solid #1e293b;
-        }
-
-        .playlist-header {
-            display: flex; justify-content: space-between; align-items: center;
-        }
-
-        .upload-btn {
-            background: linear-gradient(45deg, var(--primary), var(--accent));
-            border: none; color: white;
-            padding: 8px 20px; border-radius: 20px;
-            cursor: pointer; font-weight: 600; font-size: 0.9rem;
-            display: flex; align-items: center; gap: 8px;
-            transition: transform 0.2s;
-        }
-        .upload-btn:hover { transform: scale(1.05); }
-
-        #fileInput { display: none; }
-
-        .playlist-list {
-            list-style: none;
-            max-height: 350px;
-            overflow-y: auto;
-            padding-right: 5px;
-        }
-
-        .song-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px;
-            border-bottom: 1px solid #1e293b;
-            cursor: pointer;
+        .btn-search {
+            padding: 0 25px; background: var(--primary); color: white; border: none;
+            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem;
             transition: 0.2s;
-            border-radius: 6px;
         }
-        .song-item:hover { background: rgba(255,255,255,0.05); }
-        .song-item.active {
-            background: rgba(59, 130, 246, 0.1);
-            border-left: 4px solid var(--accent);
-        }
+        .btn-search:hover { filter: brightness(1.2); }
 
-        .source-badge {
-            font-size: 0.7rem; padding: 2px 8px; border-radius: 4px;
-            text-transform: uppercase; font-weight: bold;
+        /* STATUS BADGE */
+        .status-bar {
+            text-align: center; font-size: 0.9rem; color: var(--text-dim);
         }
-        .badge-github { background: #333; color: #fff; border: 1px solid #555; }
-        .badge-local { background: #059669; color: #fff; }
+        .badge {
+            padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 0.75rem;
+        }
+        .badge-curated { background: #00e5ff; color: #000; } /* Biru: Database Lokal */
+        .badge-yt { background: #ff0000; color: #fff; }       /* Merah: Live Search */
 
-        /* SCROLLBAR */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-dark); }
-        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+        /* RESULTS LIST */
+        .results-list {
+            list-style: none; display: flex; flex-direction: column; gap: 10px;
+        }
+        .video-item {
+            display: flex; align-items: center; gap: 15px;
+            background: #1e1e24; padding: 10px; border-radius: 8px;
+            cursor: pointer; transition: 0.2s;
+        }
+        .video-item:hover { background: #2a2a32; transform: translateX(5px); }
+        .thumb {
+            width: 120px; height: 68px; object-fit: cover; border-radius: 4px;
+        }
+        .info h4 { font-size: 1rem; margin-bottom: 5px; line-height: 1.2; }
+        .info p { font-size: 0.8rem; color: var(--text-dim); }
+
     </style>
 </head>
 <body>
 
-    <div class="app-container">
+    <div class="container">
         <header>
-            <div class="brand">
-                <h1>A&W Karaoke<span style="color:var(--text-dim); font-size:0.8em;"> System</span></h1>
-            </div>
-            <div class="repo-badge">
-                <i class="fab fa-github"></i> Kafiii0 / karaokehub
-            </div>
+            <h1>A&W Karaoke <span style="color:white; font-size:0.5em;">System</span></h1>
         </header>
 
         <div class="stage-area">
-            <video id="player" playsinline></video>
+            <div id="youtube-player"></div>
         </div>
 
-        <div class="control-bar">
-            <div style="text-align:center; margin-bottom:10px;">
-                <h3 id="songTitle" style="color:var(--accent); font-family:'Orbitron', sans-serif;">Menunggu Lagu...</h3>
-                <small id="timeDisplay" style="color:var(--text-dim); font-family:monospace;">00:00 / 00:00</small>
-            </div>
-
-            <div class="main-transport">
-                <button class="btn-transport" onclick="toggleShuffle()" id="btnShuffle" title="Acak Lagu"><i class="fas fa-random"></i></button>
-                <button class="btn-transport" onclick="prevSong()" title="Sebelumnya"><i class="fas fa-step-backward"></i></button>
-                <button class="btn-transport btn-play" onclick="togglePlay()" id="btnPlay" title="Mainkan"><i class="fas fa-play"></i></button>
-                <button class="btn-transport" onclick="nextSong()" title="Selanjutnya"><i class="fas fa-step-forward"></i></button>
-                <button class="btn-transport" onclick="toggleLoop()" id="btnLoop" title="Ulangi Satu"><i class="fas fa-repeat"></i></button>
-            </div>
-            
-            <div style="display:flex; justify-content:center; gap:15px; align-items:center; margin-top:15px;">
-                 <i class="fas fa-tachometer-alt" style="color:var(--primary)"></i>
-                 <input type="range" min="0.5" max="1.5" step="0.1" value="1" oninput="changeSpeed(this.value)" style="width:120px; accent-color:var(--accent);">
-                 <span id="speedVal" style="font-size:0.8rem; width:40px;">1.0x</span>
-            </div>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Ketik judul lagu (Contoh: Separuh Aku)..." onkeypress="handleEnter(event)">
+            <button class="btn-search" onclick="performSearch()">CARI</button>
         </div>
 
-        <div class="playlist-container">
-            <div class="playlist-header">
-                <h3 style="display:flex; align-items:center; gap:10px;"><i class="fas fa-list-ul"></i> Daftar Lagu</h3>
-                
-                <label for="fileInput" class="upload-btn">
-                    <i class="fas fa-cloud-upload-alt"></i> Upload Manual
-                </label>
-                <input type="file" id="fileInput" multiple accept="video/*, .mp4, .mkv, .webm, .mov">
-            </div>
-            
-            <ul class="playlist-list" id="playlist">
-                <li style="text-align:center; padding:20px; color:#555;">Memuat lagu dari GitHub...</li>
+        <div class="status-bar" id="statusMsg">Siap bernyanyi? Cari lagu di atas!</div>
+
+        <ul class="results-list" id="resultsList">
             </ul>
-        </div>
     </div>
 
     <script>
-        // ===============================================
-        // 🔒 KONFIGURASI TERKUNCI (Sesuai Screenshot)
-        // ===============================================
-        const GH_USERNAME = 'Kafiii0';
-        const GH_REPO     = 'karaokehub';
-        const GH_FOLDER   = 'videos';  // <-- Pastikan folder ini dibuat di repo!
-        const GH_BRANCH   = 'main';    // Default branch biasanya 'main'
-
-        // ================= STATE SYSTEM =================
-        let playlistData = []; 
-        let currentIndex = -1;
-        let isShuffle = false;
-        let isLoop = false;
-        const player = document.getElementById('player');
+        // ==========================================
+        // 🔑 KONFIGURASI (WAJIB DIISI)
+        // ==========================================
+        const YOUTUBE_API_KEY = 'AIzaSyDI4Q4h3EkiH7mQzeQz7AygoMmvv_sRbBs'; 
         
-        // ================= STARTUP =================
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchGithubSongs();
-        });
+        // ==========================================
+        // 💿 DATABASE LAGU PILIHAN (CURATED LIST)
+        // ==========================================
+        // Masukkan ID Video YouTube untuk lagu-lagu favorit Anda di sini.
+        // Jika user mencari judul ini, video inilah yang PASTI diputar.
+        const MY_DATABASE = [
+            { keywords: ["separuh aku", "noah separuh"], id: "rS7R7Zz2aKY", title: "NOAH - Separuh Aku (Official Karaoke)" },
+            { keywords: ["hampa", "ari lasso hampa"], id: "k-C53tq-m4E", title: "Ari Lasso - Hampa (HD Karaoke)" },
+            { keywords: ["pupus", "dewa 19"], id: "mJ2L7lZqFzA", title: "Dewa 19 - Pupus (Karaoke Version)" },
+            { keywords: ["avenged", "dear god"], id: "mzX0rhF8buE", title: "Avenged Sevenfold - Dear God (Karaoke)" }
+        ];
 
-        // ================= GITHUB CONNECT =================
-        async function fetchGithubSongs() {
-            const apiUrl = `https://api.github.com/repos/${GH_USERNAME}/${GH_REPO}/contents/${GH_FOLDER}?ref=${GH_BRANCH}`;
-            const playlistUl = document.getElementById('playlist');
+        // ==========================================
+        // 🧠 LOGIKA SISTEM
+        // ==========================================
+        
+        let player; // Variabel global untuk player YouTube
 
-            try {
-                const res = await fetch(apiUrl);
-                
-                if (res.status === 404) {
-                    throw new Error("Folder 'videos' tidak ditemukan di Repo.");
-                }
-                if (!res.ok) throw new Error("Gagal mengambil data.");
-                
-                const data = await res.json();
-                
-                // Format data dari GitHub
-                const ghSongs = data
-                    .filter(f => f.type === 'file' && f.name.match(/\.(mp4|webm|mkv|mov)$/i))
-                    .map(f => ({
-                        name: f.name.replace(/\.[^/.]+$/, "").replace(/_/g, " "),
-                        url: f.download_url,
-                        source: 'GITHUB'
-                    }));
+        // 1. Load YouTube IFrame API
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-                // Gabungkan ke playlist
-                playlistData = [...playlistData, ...ghSongs];
-                
-                if (playlistData.length === 0) {
-                    playlistUl.innerHTML = `<li style="text-align:center; padding:20px; color:orange;">
-                        Folder 'videos' di GitHub masih kosong.<br>Silakan upload video atau gunakan tombol 'Upload Manual'.
-                    </li>`;
-                } else {
-                    renderPlaylist();
-                    // Load lagu pertama otomatis tapi pause dulu
-                    if(currentIndex === -1) loadSong(0, false);
-                }
-
-            } catch (err) {
-                console.error(err);
-                playlistUl.innerHTML = `<li style="text-align:center; padding:20px; color:#ff4444;">
-                    Gagal memuat GitHub.<br>Pastikan folder <b>'videos'</b> ada di repo <b>${GH_REPO}</b>.
-                </li>`;
-            }
-        }
-
-        // ================= UPLOAD LOKAL =================
-        document.getElementById('fileInput').addEventListener('change', function(e) {
-            const files = Array.from(e.target.files);
-            
-            const localSongs = files.map(file => ({
-                name: file.name.replace(/\.[^/.]+$/, "").replace(/_/g, " "),
-                url: URL.createObjectURL(file), 
-                source: 'LOKAL'
-            }));
-
-            // Tambahkan ke playlist yang sudah ada
-            playlistData = [...playlistData, ...localSongs];
-            renderPlaylist();
-
-            // Jika sebelumnya kosong, langsung mainkan
-            if (currentIndex === -1) loadSong(0, true);
-        });
-
-        // ================= LOGIKA PLAYER =================
-        function loadSong(index, autoPlay = true) {
-            if (index < 0 || index >= playlistData.length) return;
-            
-            currentIndex = index;
-            const song = playlistData[index];
-
-            player.src = song.url;
-            document.getElementById('songTitle').textContent = song.name;
-            
-            // Highlight di playlist
-            renderPlaylist();
-
-            if (autoPlay) {
-                player.play().catch(e => console.log("Autoplay dicegah browser"));
-                updatePlayBtn(true);
-            }
-        }
-
-        function togglePlay() {
-            if (player.paused) {
-                player.play();
-                updatePlayBtn(true);
-            } else {
-                player.pause();
-                updatePlayBtn(false);
-            }
-        }
-
-        function updatePlayBtn(isPlaying) {
-            const btn = document.getElementById('btnPlay');
-            btn.innerHTML = isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
-        }
-
-        function nextSong() {
-            if (playlistData.length === 0) return;
-            let nextIdx;
-            
-            if (isShuffle) {
-                nextIdx = Math.floor(Math.random() * playlistData.length);
-            } else {
-                nextIdx = currentIndex + 1;
-                if (nextIdx >= playlistData.length) nextIdx = 0; // Loop balik ke awal
-            }
-            loadSong(nextIdx, true);
-        }
-
-        function prevSong() {
-            if (playlistData.length === 0) return;
-            let prevIdx = currentIndex - 1;
-            if (prevIdx < 0) prevIdx = playlistData.length - 1;
-            loadSong(prevIdx, true);
-        }
-
-        // Event Video Selesai
-        player.addEventListener('ended', () => {
-            if (isLoop) {
-                player.currentTime = 0;
-                player.play();
-            } else {
-                nextSong();
-            }
-        });
-
-        player.addEventListener('timeupdate', () => {
-            const curr = formatTime(player.currentTime);
-            const dur = formatTime(player.duration || 0);
-            document.getElementById('timeDisplay').textContent = `${curr} / ${dur}`;
-        });
-
-        // ================= UI HELPER =================
-        function renderPlaylist() {
-            const ul = document.getElementById('playlist');
-            ul.innerHTML = '';
-
-            playlistData.forEach((song, idx) => {
-                const li = document.createElement('li');
-                li.className = `song-item ${idx === currentIndex ? 'active' : ''}`;
-                li.innerHTML = `
-                    <div style="display:flex; align-items:center; gap:10px; overflow:hidden;">
-                        <span style="color:#555; font-size:0.8rem; width:20px;">${idx + 1}</span>
-                        <b style="white-space:nowrap;">${song.name}</b>
-                    </div>
-                    <span class="source-badge ${song.source === 'GITHUB' ? 'badge-github' : 'badge-local'}">
-                        ${song.source}
-                    </span>
-                `;
-                li.onclick = () => loadSong(idx, true);
-                ul.appendChild(li);
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('youtube-player', {
+                height: '100%',
+                width: '100%',
+                videoId: 'M7lc1UVf-VE', // Video Default (Intro)
+                playerVars: { 'autoplay': 0, 'rel': 0, 'modestbranding': 1 },
+                events: { 'onStateChange': onPlayerStateChange }
             });
         }
 
-        function formatTime(s) {
-            const min = Math.floor(s / 60);
-            const sec = Math.floor(s % 60);
-            return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+        function onPlayerStateChange(event) {
+            // Bisa tambahkan logika auto-next di sini jika mau
         }
 
-        function toggleShuffle() {
-            isShuffle = !isShuffle;
-            document.getElementById('btnShuffle').classList.toggle('active-mode', isShuffle);
+        // 2. Fungsi Utama Pencarian
+        function handleEnter(e) {
+            if (e.key === 'Enter') performSearch();
         }
 
-        function toggleLoop() {
-            isLoop = !isLoop;
-            document.getElementById('btnLoop').classList.toggle('active-mode', isLoop);
-            player.loop = isLoop;
+        async function performSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const resultsList = document.getElementById('resultsList');
+            const statusMsg = document.getElementById('statusMsg');
+            
+            if (!query) return;
+
+            resultsList.innerHTML = '<li style="padding:10px; text-align:center;">🔍 Sedang mencari...</li>';
+
+            // --- TAHAP A: Cek Database Lokal (Curated) ---
+            // Kita cari apakah ada keyword yang cocok di database lokal
+            const localMatch = MY_DATABASE.find(song => 
+                song.keywords.some(keyword => query.includes(keyword))
+            );
+
+            if (localMatch) {
+                // JIKA KETEMU DI DATABASE LOKAL
+                statusMsg.innerHTML = `<span class="badge badge-curated">DATABASE LOKAL</span> Lagu ditemukan di koleksi pribadi!`;
+                loadVideo(localMatch.id);
+                resultsList.innerHTML = ''; // Bersihkan list
+                return;
+            }
+
+            // --- TAHAP B: Cari di YouTube API (Jika tidak ada di lokal) ---
+            statusMsg.innerHTML = `<span class="badge badge-yt">YOUTUBE SEARCH</span> Mencari di YouTube Server...`;
+            
+            try {
+                // Tambahkan kata "Karaoke" otomatis agar hasilnya relevan
+                const searchQ = encodeURIComponent(query + " karaoke instrument");
+                const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${searchQ}&type=video&key=${YOUTUBE_API_KEY}`;
+                
+                const res = await fetch(url);
+                const data = await res.json();
+
+                if (data.error) {
+                    throw new Error(data.error.message);
+                }
+
+                displayResults(data.items);
+
+            } catch (error) {
+                console.error(error);
+                resultsList.innerHTML = `<li style="padding:10px; color:red;">Gagal: ${error.message}. <br>Cek API Key Anda.</li>`;
+            }
         }
 
-        function changeSpeed(val) {
-            player.playbackRate = val;
-            document.getElementById('speedVal').textContent = val + "x";
+        // 3. Menampilkan Hasil YouTube
+        function displayResults(videos) {
+            const resultsList = document.getElementById('resultsList');
+            resultsList.innerHTML = '';
+
+            if (videos.length === 0) {
+                resultsList.innerHTML = '<li>Tidak ditemukan hasil.</li>';
+                return;
+            }
+
+            videos.forEach(video => {
+                const title = video.snippet.title;
+                const thumb = video.snippet.thumbnails.medium.url;
+                const channel = video.snippet.channelTitle;
+                const videoId = video.id.videoId;
+
+                const li = document.createElement('li');
+                li.className = 'video-item';
+                li.innerHTML = `
+                    <img src="${thumb}" class="thumb">
+                    <div class="info">
+                        <h4>${title}</h4>
+                        <p>${channel}</p>
+                    </div>
+                `;
+                li.onclick = () => {
+                    loadVideo(videoId);
+                    // Scroll ke atas (player)
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+                resultsList.appendChild(li);
+            });
+        }
+
+        // 4. Memutar Video
+        function loadVideo(id) {
+            if (player && player.loadVideoById) {
+                player.loadVideoById(id);
+            }
         }
     </script>
 </body>
