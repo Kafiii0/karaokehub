@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A&W Karaoke Hub Ultimate Timekeeper</title>
+    <title>A&W Karaoke Hub - Party Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -14,6 +14,7 @@
             --primary: #ff0055;
             --accent: #00e5ff;
             --error: #ff3333;
+            --gold: #ffd700;
             --text-main: #f8fafc;
             --text-dim: #94a3b8;
             --glass: rgba(30, 30, 36, 0.8);
@@ -133,11 +134,37 @@
             color: white; text-decoration: none; border-radius: 5px; font-weight: bold;
         }
 
+        /* SCORE MODAL (POPUP) - NEW FEATURE */
+        .score-modal {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 50;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(8px); text-align: center;
+        }
+        .score-circle {
+            width: 140px; height: 140px; border-radius: 50%;
+            border: 5px solid var(--accent);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3.5rem; font-family: 'Orbitron'; color: white;
+            box-shadow: 0 0 30px var(--accent); margin-bottom: 20px;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: rgba(0,0,0,0.5);
+        }
+        @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+        .score-title { font-size: 1rem; color: var(--text-dim); letter-spacing: 2px; margin-bottom: 10px; }
+        .score-comment { font-size: 1.8rem; color: var(--gold); font-weight: bold; margin-bottom: 25px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+        .btn-close-score {
+            padding: 12px 30px; background: linear-gradient(45deg, var(--primary), #ff5e62);
+            color: white; border: none; border-radius: 30px; font-weight: bold; cursor: pointer; font-size: 1.1rem;
+            box-shadow: 0 0 15px var(--primary); transition: 0.3s;
+        }
+        .btn-close-score:hover { transform: scale(1.05); box-shadow: 0 0 25px var(--primary); }
+
         /* CONTROLS SIDEBAR */
         .player-controls {
             background: var(--card-bg); padding: 20px; border-radius: 12px;
             display: flex; flex-direction: column; gap: 15px; border: 1px solid #333;
-            height: 100%; min-height: 450px; /* Sedikit dipertinggi untuk stats */
+            height: 100%; min-height: 450px; 
         }
         
         .now-playing-card {
@@ -169,7 +196,7 @@
         .slider-label { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-dim); margin-bottom: 5px; }
         input[type=range] { width: 100%; accent-color: var(--accent); cursor: pointer; }
 
-        /* STATS BOX (UPDATED) */
+        /* STATS BOX */
         .stats-box {
             margin-top: auto; padding-top: 15px; border-top: 1px solid #333;
             display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px;
@@ -224,7 +251,7 @@
         <header>
             <div>
                 <div class="brand">A&W <span style="font-size:0.6em; color:var(--text-main);">KARAOKE HUB</span></div>
-                <div style="font-size:0.7rem; color:var(--text-dim);">Professional System v3.5</div>
+                <div style="font-size:0.7rem; color:var(--text-dim);">Party & Timekeeper Edition v4.0</div>
             </div>
             
             <div class="live-clock" id="clockDisplay">
@@ -243,6 +270,16 @@
                 <div class="ambient-glow"></div>
                 <div class="video-container">
                     <div id="youtube-player"></div>
+                    
+                    <div class="score-modal" id="scoreModal">
+                        <div class="score-title">SKOR PERFORMA ANDA</div>
+                        <div class="score-circle" id="scoreVal">0</div>
+                        <div class="score-comment" id="scoreComment">Luar Biasa!</div>
+                        <button class="btn-close-score" onclick="closeScore()">
+                            LANJUT <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+
                     <div id="errorOverlay" class="error-overlay">
                         <i class="fas fa-exclamation-triangle error-icon" style="font-size:3rem; color:var(--error); margin-bottom:15px;"></i>
                         <h3>Video Dibatasi</h3>
@@ -273,13 +310,17 @@
                     <div class="bar" style="animation-delay: 0.5s"></div>
                 </div>
 
+                <button class="ctrl-btn primary" onclick="forceFinishSong()" style="width:100%; font-weight:bold; background:var(--gold); color:black;">
+                    <i class="fas fa-trophy"></i> SELESAI (CEK SKOR)
+                </button>
+
                 <div class="control-grid">
                     <button class="ctrl-btn" onclick="toggleCinemaMode()"><i class="fas fa-lightbulb"></i> Cinema</button>
                     <button class="ctrl-btn" onclick="replaySong()"><i class="fas fa-redo"></i> Replay</button>
                 </div>
                 
-                <button class="ctrl-btn primary" onclick="playNextInQueue()" style="width:100%; font-weight:bold;">
-                    <i class="fas fa-step-forward"></i> SKIP / NEXT SONG
+                <button class="ctrl-btn" onclick="playNextInQueue()" style="width:100%;">
+                    <i class="fas fa-step-forward"></i> SKIP / LEWATI
                 </button>
 
                 <div class="slider-group">
@@ -374,24 +415,21 @@
         let currentVideoId = '';
         let songsSungSession = 0;
         
-        // --- NEW VARIABLES FOR TIMEKEEPER ---
+        // --- TIMEKEEPER VARIABLES ---
         let totalSecondsSung = 0;
         let singingInterval;
 
         // ================= CLOCK & TIMER LOGIC =================
-        
-        // 1. Live Clock
         function updateClock() {
             const now = new Date();
             const timeString = now.toLocaleTimeString('id-ID', { hour12: false });
             document.querySelector('#clockDisplay span').textContent = timeString;
         }
         setInterval(updateClock, 1000);
-        updateClock(); // Run immediately
+        updateClock();
 
-        // 2. Total Singing Duration Timer
         function startSingingTimer() {
-            stopSingingTimer(); // Prevent duplicates
+            stopSingingTimer();
             singingInterval = setInterval(() => {
                 totalSecondsSung++;
                 updateDurationUI();
@@ -403,12 +441,10 @@
         }
 
         function updateDurationUI() {
-            // Convert seconds to readable format (e.g., 5m 30s)
             const minutes = Math.floor(totalSecondsSung / 60);
             const seconds = totalSecondsSung % 60;
             let text = `${minutes}m`;
-            if(minutes < 60) text = `${minutes}m ${seconds}s`; // Show seconds if under 1 hour
-            
+            if(minutes < 60) text = `${minutes}m ${seconds}s`; 
             document.getElementById('totalDurationDisplay').textContent = text;
         }
 
@@ -436,17 +472,16 @@
             // LOGIC FOR TIMER & VISUALIZER
             if (event.data === YT.PlayerState.PLAYING) {
                 visualizer.classList.add('active');
-                startSingingTimer(); // Start counting duration
+                startSingingTimer();
             } else {
                 visualizer.classList.remove('active');
-                stopSingingTimer(); // Pause counting duration
+                stopSingingTimer();
             }
 
+            // --- AUTO SCORE LOGIC ---
             if (event.data === YT.PlayerState.ENDED) {
-                songsSungSession++;
-                document.getElementById('sungCount').textContent = songsSungSession;
                 stopSingingTimer();
-                playNextInQueue();
+                showScore(); // Tampilkan skor otomatis saat lagu habis
             }
         }
 
@@ -458,9 +493,44 @@
             }
         }
 
+        // ================= SCORING SYSTEM (FUN FEATURE) =================
+        function calculateScore() {
+            // Random score between 75 and 100 for fun
+            return Math.floor(Math.random() * (100 - 75 + 1)) + 75;
+        }
+
+        function showScore() {
+            const score = calculateScore();
+            const comments = ["Luar Biasa!", "Suara Emas!", "Mantap Jiwa!", "Keren Abis!", "Calon Idol!", "Gokil!", "Legend!"];
+            const comment = comments[Math.floor(Math.random() * comments.length)];
+
+            document.getElementById('scoreVal').textContent = score;
+            document.getElementById('scoreComment').textContent = comment;
+            document.getElementById('scoreModal').style.display = 'flex';
+        }
+
+        function closeScore() {
+            document.getElementById('scoreModal').style.display = 'none';
+            // Tambah counter lagu
+            songsSungSession++;
+            document.getElementById('sungCount').textContent = songsSungSession;
+            // Lanjut ke lagu berikutnya
+            playNextInQueue();
+        }
+
+        function forceFinishSong() {
+            if(player && player.getPlayerState() === YT.PlayerState.PLAYING) {
+                player.pauseVideo();
+                showScore();
+            } else {
+                alert("Putar lagu dulu baru bisa dinilai!");
+            }
+        }
+
         // ================= PLAYER LOGIC =================
         function playSong(song, instant = false) {
             document.getElementById('errorOverlay').style.display = 'none';
+            document.getElementById('scoreModal').style.display = 'none';
 
             if (instant) {
                 currentVideoId = song.id;
@@ -471,7 +541,6 @@
                 queue.push(song);
                 updateQueueUI();
                 
-                // Feedback visual
                 const qTab = document.querySelector("button[onclick*='queue']");
                 qTab.style.background = "var(--accent)"; qTab.style.color="black";
                 setTimeout(() => { qTab.style.background = ""; qTab.style.color=""; }, 300);
