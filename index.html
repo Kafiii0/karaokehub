@@ -29,10 +29,9 @@
             overflow-x: hidden;
         }
 
-        /* --- LAYOUT KHUSUS TV --- */
         .container { width: 100%; max-width: 1400px; display: flex; flex-direction: column; gap: 20px; z-index: 1; }
 
-        /* HEADER & FULLSCREEN BUTTON */
+        /* HEADER */
         header {
             display: flex; justify-content: space-between; align-items: center;
             padding-bottom: 15px; border-bottom: 2px solid #2a2a35;
@@ -43,9 +42,7 @@
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             text-transform: uppercase; letter-spacing: 2px;
         }
-        
         .header-right { display: flex; gap: 15px; align-items: center; }
-
         .btn-fullscreen {
             background: var(--primary); color: white; border: none;
             padding: 10px 25px; border-radius: 8px; font-weight: bold;
@@ -54,7 +51,6 @@
             box-shadow: 0 0 15px rgba(255, 0, 85, 0.4); transition: 0.3s;
         }
         .btn-fullscreen:hover { transform: scale(1.05); background: white; color: var(--primary); }
-
         .live-clock {
             font-family: 'Orbitron', monospace; font-size: 1.5rem; color: var(--accent);
             text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
@@ -62,24 +58,32 @@
             display: flex; align-items: center; gap: 10px;
         }
 
-        /* MARQUEE (DIPERLAMBAT) */
+        /* MARQUEE */
         .marquee-container {
             background: #1a1a20; border: 1px solid #333; border-radius: 4px;
             overflow: hidden; width: 100%; padding: 8px 0; margin-bottom: 10px;
         }
         .marquee-text {
-            display: inline-block; white-space: nowrap;
-            padding-left: 100%; 
-            /* DURASI DIUBAH KE 45s AGAR LEBIH LAMBAT DAN MUDAH DIBACA */
+            display: inline-block; white-space: nowrap; padding-left: 100%; 
             animation: marquee 45s linear infinite; 
             font-family: 'Orbitron', monospace; color: var(--gold); font-size: 1.1rem;
         }
         @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
 
-        /* PLAYER AREA */
-        .stage-wrapper {
-            display: grid; grid-template-columns: 2.8fr 1fr; gap: 25px;
+        /* VIEW CONTROL */
+        #player-view { display: none; }
+        #landing-view { display: block; animation: fadeIn 0.5s; }
+        
+        .btn-back-home {
+            background: #333; color: white; border: 1px solid white;
+            padding: 10px 20px; border-radius: 8px; cursor: pointer;
+            display: flex; align-items: center; gap: 10px; font-weight: bold;
+            margin-bottom: 15px; width: fit-content;
         }
+        .btn-back-home:hover { background: var(--accent); color: black; border-color: var(--accent); }
+
+        /* PLAYER LAYOUT */
+        .stage-wrapper { display: grid; grid-template-columns: 2.8fr 1fr; gap: 25px; }
         @media(max-width: 900px) { .stage-wrapper { grid-template-columns: 1fr; } }
 
         .video-container {
@@ -94,27 +98,26 @@
             filter: blur(50px); animation: pulseGlow 5s infinite alternate;
         }
         @keyframes pulseGlow { 0% { opacity: 0.3; } 100% { opacity: 0.6; } }
-
         #youtube-player { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
-        /* SCORE MODAL */
+        /* SCORE MODAL & COUNTDOWN */
         .score-modal {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 50;
+            background: rgba(0,0,0,0.95); z-index: 50;
             display: none; flex-direction: column; align-items: center; justify-content: center;
             backdrop-filter: blur(8px); text-align: center;
         }
         .score-circle {
-            width: 180px; height: 180px; border-radius: 50%;
-            border: 6px solid var(--accent);
+            width: 180px; height: 180px; border-radius: 50%; border: 6px solid var(--accent);
             display: flex; align-items: center; justify-content: center;
             font-size: 5rem; font-family: 'Orbitron'; color: white;
             box-shadow: 0 0 50px var(--accent); margin-bottom: 20px;
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            background: rgba(0,0,0,0.5);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); background: rgba(0,0,0,0.5);
         }
         @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
-        .score-comment { font-size: 2.5rem; color: var(--gold); font-weight: bold; margin-bottom: 30px; text-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
+        .score-comment { font-size: 2.5rem; color: var(--gold); font-weight: bold; margin-bottom: 10px; text-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
+        .score-timer { color: var(--text-dim); font-family: monospace; font-size: 1.2rem; margin-bottom: 20px; animation: pulse 1s infinite; }
+        
         .btn-close-score {
             padding: 15px 40px; background: linear-gradient(45deg, var(--primary), #ff5e62);
             color: white; border: none; border-radius: 40px; font-weight: bold; cursor: pointer; font-size: 1.3rem;
@@ -128,121 +131,61 @@
             display: flex; flex-direction: column; gap: 15px; border: 1px solid #333;
             height: 100%; min-height: 500px; 
         }
-        
-        .now-playing-card {
-            background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;
-            border-left: 4px solid var(--accent);
-        }
+        .now-playing-card { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent); }
         .now-playing-title { font-size: 1.1rem; font-weight: 700; color: white; margin-top: 5px; line-height: 1.2; }
-        
-        .visualizer {
-            display: flex; align-items: flex-end; justify-content: space-between;
-            height: 60px; gap: 4px; margin: 15px 0; opacity: 0.3; transition: 0.3s;
-        }
+        .visualizer { display: flex; align-items: flex-end; justify-content: space-between; height: 60px; gap: 4px; margin: 15px 0; opacity: 0.3; transition: 0.3s; }
         .visualizer.active { opacity: 1; }
         .bar { width: 100%; background: var(--accent); border-radius: 2px 2px 0 0; animation: equalizer 0s infinite; }
         .visualizer.active .bar { animation-duration: 0.5s; }
         @keyframes equalizer { 0% { height: 10%; } 50% { height: 100%; background: var(--primary); } 100% { height: 10%; } }
-
         .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .ctrl-btn {
-            background: #333; color: white; border: none; padding: 15px; border-radius: 8px;
-            cursor: pointer; transition: 0.2s; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 8px;
-        }
+        .ctrl-btn { background: #333; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .ctrl-btn:hover { background: var(--accent); color: black; }
         .ctrl-btn.primary { background: var(--primary); }
-        
-        /* SLIDERS */
         .slider-group { margin-top: 10px; }
         .slider-label { display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-dim); margin-bottom: 8px; }
         input[type=range] { width: 100%; accent-color: var(--accent); cursor: pointer; height: 8px; }
-
-        /* STATS BOX */
-        .stats-box {
-            margin-top: auto; padding-top: 20px; border-top: 1px solid #333;
-            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;
-        }
+        .stats-box { margin-top: auto; padding-top: 20px; border-top: 1px solid #333; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
         .stat-val { font-family: 'Orbitron'; font-size: 1.3rem; color: var(--accent); }
         .stat-lbl { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; }
 
-        /* TABS */
-        .nav-tabs { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 5px; margin-top: 25px; }
-        .nav-btn {
-            background: var(--card-bg); color: var(--text-dim); border: 1px solid #333;
-            padding: 15px 30px; border-radius: 30px; cursor: pointer; transition: 0.3s;
-            font-weight: 600; white-space: nowrap; display: flex; align-items: center; gap: 10px; font-size: 1.1rem;
-        }
-        .nav-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        /* LANDING PAGE ELEMENTS */
+        .sticky-search { position: sticky; top: 0; z-index: 80; background: var(--bg-dark); padding: 15px 0; border-bottom: 1px solid #333; }
+        .search-wrapper { position: relative; display: flex; gap: 10px; align-items: center; }
+        input[type="text"] { width: 100%; padding: 18px 25px; padding-right: 120px; border-radius: 50px; border: 2px solid #333; background: #2a2a35; color: white; font-size: 1.2rem; }
+        .search-actions { position: absolute; right: 5px; top: 5px; bottom: 5px; display: flex; gap: 5px; }
+        .btn-action-search { width: 50px; height: 100%; border-radius: 50%; border: none; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .btn-mic { background: #333; color: white; }
+        .btn-mic.listening { background: var(--error); animation: pulseRed 1s infinite; }
+        .btn-go { background: var(--accent); color: black; }
+        @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(255, 51, 51, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(255, 51, 51, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 51, 51, 0); } }
 
+        .nav-tabs { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 5px; margin-top: 25px; }
+        .nav-btn { background: var(--card-bg); color: var(--text-dim); border: 1px solid #333; padding: 15px 30px; border-radius: 30px; cursor: pointer; transition: 0.3s; font-weight: 600; white-space: nowrap; display: flex; align-items: center; gap: 10px; font-size: 1.1rem; }
+        .nav-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
         .content-section { display: none; animation: fadeIn 0.3s; margin-top: 20px; }
         .content-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* GRID LAGU */
         .song-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
-        .song-card {
-            background: var(--card-bg); border-radius: 12px; overflow: hidden;
-            transition: 0.3s; position: relative; border: 1px solid #333; cursor: pointer;
-        }
+        .song-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; transition: 0.3s; position: relative; border: 1px solid #333; cursor: pointer; }
         .song-card:hover { transform: translateY(-8px); border-color: var(--accent); box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
         .card-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
         .card-info { padding: 15px; }
-        
         .list-view { list-style: none; display: flex; flex-direction: column; gap: 12px; }
-        .list-item {
-            display: flex; align-items: center; gap: 20px; background: var(--card-bg);
-            padding: 15px; border-radius: 10px; border: 1px solid #333; transition: 0.2s;
-        }
+        .list-item { display: flex; align-items: center; gap: 20px; background: var(--card-bg); padding: 15px; border-radius: 10px; border: 1px solid #333; transition: 0.2s; }
         .list-item:hover { border-color: var(--accent); background: #25252d; }
         .list-thumb { width: 120px; height: 68px; object-fit: cover; border-radius: 6px; }
-
-        /* SEARCH BAR & VOICE BUTTON */
-        .sticky-search { position: sticky; top: 0; z-index: 80; background: var(--bg-dark); padding: 15px 0; border-bottom: 1px solid #333; }
-        .search-wrapper { position: relative; display: flex; gap: 10px; align-items: center; }
-        
-        input[type="text"] { 
-            width: 100%; padding: 18px 25px; padding-right: 120px; 
-            border-radius: 50px; border: 2px solid #333; 
-            background: #2a2a35; color: white; font-size: 1.2rem; 
-        }
-        
-        .search-actions {
-            position: absolute; right: 5px; top: 5px; bottom: 5px;
-            display: flex; gap: 5px;
-        }
-
-        .btn-action-search {
-            width: 50px; height: 100%; border-radius: 50%; border: none;
-            cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center;
-            transition: 0.2s;
-        }
-        
-        .btn-mic { background: #333; color: white; }
-        .btn-mic.listening { background: var(--error); animation: pulseRed 1s infinite; }
-        .btn-go { background: var(--accent); color: black; }
-        
-        @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(255, 51, 51, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(255, 51, 51, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 51, 51, 0); } }
-
         .empty-msg { text-align: center; color: var(--text-dim); padding: 50px; font-size: 1.2rem; }
         .action-btn { background: transparent; border: none; color: var(--text-dim); cursor: pointer; font-size: 1.3rem; padding: 5px; }
         .action-btn:hover { color: white; transform: scale(1.1); }
         .action-btn.liked { color: var(--primary); }
 
-        /* ERROR OVERLAY */
-        .error-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); display: none; flex-direction: column;
-            align-items: center; justify-content: center; text-align: center; padding: 20px; z-index: 10;
-        }
-
-        /* CINEMA MODE */
-        #cinemaOverlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.98); z-index: 90; display: none; pointer-events: none;
-        }
+        .error-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; z-index: 10; }
+        #cinemaOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 90; display: none; pointer-events: none; }
         body.cinema-mode #cinemaOverlay { display: block; }
-        body.cinema-mode .sticky-search, body.cinema-mode header, body.cinema-mode .nav-tabs { opacity: 0; transition: 0.5s; }
         body.cinema-mode .video-container { z-index: 100; transform: scale(1.1); }
+        body.cinema-mode .btn-back-home { opacity: 0; pointer-events: none; }
 
     </style>
 </head>
@@ -263,118 +206,129 @@
             </div>
         </header>
 
-        <div class="marquee-container">
-            <div class="marquee-text" id="marqueeText">
-                *** SELAMAT DATANG DI A&W KARAOKE HUB TV EDITION *** GUNAKAN MIC UNTUK MENCARI LAGU *** SELAMAT BERNYANYI ***
+        <div id="landing-view">
+            <div class="marquee-container">
+                <div class="marquee-text" id="marqueeText">
+                 SELAMAT DATANG DI A&W KARAOKE HUB TV EDITION | GUNAKAN MIC UNTUK MENCARI LAGU | SELAMAT BERNYANYI |
+                </div>
             </div>
-        </div>
 
-        <div class="stage-wrapper">
-            <div style="position:relative;">
-                <div class="ambient-glow"></div>
-                <div class="video-container">
-                    <div id="youtube-player"></div>
-                    
-                    <div class="score-modal" id="scoreModal">
-                        <div class="score-title">SKOR PERFORMA ANDA</div>
-                        <div class="score-circle" id="scoreVal">0</div>
-                        <div class="score-comment" id="scoreComment">Luar Biasa!</div>
-                        <button class="btn-close-score" onclick="closeScore()">
-                            LANJUT <i class="fas fa-arrow-right"></i>
+            <div class="sticky-search">
+                <div class="search-wrapper">
+                    <input type="text" id="searchInput" placeholder="Cari artis atau judul lagu..." onkeypress="handleEnter(event)">
+                    <div class="search-actions">
+                        <button class="btn-action-search btn-mic" id="micBtn" onclick="startVoiceSearch()" title="Ketik Suara">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        <button class="btn-action-search btn-go" onclick="performSearch()" title="Cari">
+                            <i class="fas fa-search"></i>
                         </button>
                     </div>
+                </div>
+            </div>
 
-                    <div id="errorOverlay" class="error-overlay">
-                        <i class="fas fa-exclamation-triangle" style="font-size:3rem; color:var(--error); margin-bottom:15px;"></i>
-                        <h3>Video Dibatasi</h3>
-                        <p style="color:#aaa;">Video ini dibatasi oleh YouTube.</p>
-                        <a id="fallbackLink" href="#" target="_blank" class="btn-redirect">Buka di YouTube</a>
-                        <button onclick="playNextInQueue()" style="margin-top:15px; padding:10px 20px; background:none; border:1px solid white; color:white; border-radius:4px; cursor:pointer;">Lewati</button>
+            <div class="nav-tabs">
+                <button class="nav-btn active" onclick="switchTab('home')"><i class="fas fa-home"></i> Home</button>
+                <button class="nav-btn" onclick="switchTab('search')"><i class="fas fa-list"></i> Hasil Cari</button>
+                <button class="nav-btn" onclick="switchTab('queue')"><i class="fas fa-list-ol"></i> Antrian</button>
+                <button class="nav-btn" onclick="switchTab('favorites')"><i class="fas fa-heart"></i> Favorit</button>
+            </div>
+
+            <div id="home" class="content-section active"><h3 style="margin-bottom:15px; color:var(--accent);">🔥 Top Hits Karaoke</h3><div class="song-grid" id="featuredGrid"></div></div>
+            <div id="search" class="content-section"><ul class="list-view" id="searchResults"><li class="empty-msg">Hasil pencarian akan muncul di sini.</li></ul></div>
+            <div id="queue" class="content-section">
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px;"><h3><i class="fas fa-list-ol"></i> Daftar Antrian</h3><button onclick="clearQueue()" style="color:var(--error); background:none; border:none; cursor:pointer; font-size:1rem;">Hapus Semua</button></div>
+                <ul class="list-view" id="queueList"><li class="empty-msg">Antrian kosong.</li></ul>
+            </div>
+            <div id="favorites" class="content-section"><h3 style="margin-bottom:15px; color:var(--primary);">❤️ Koleksi Favorit</h3><div class="song-grid" id="favoritesGrid"></div></div>
+        </div>
+
+        <div id="player-view">
+            <button class="btn-back-home" onclick="goToHome()">
+                <i class="fas fa-arrow-left"></i> Kembali ke Home
+            </button>
+
+            <div class="stage-wrapper">
+                <div style="position:relative;">
+                    <div class="ambient-glow"></div>
+                    <div class="video-container">
+                        <div id="youtube-player"></div>
+                        
+                        <div class="score-modal" id="scoreModal">
+                            <div class="score-title" style="color:#fff; font-size:1.5rem; margin-bottom:10px;">SKOR PERFORMA ANDA</div>
+                            <div class="score-circle" id="scoreVal">0</div>
+                            <div class="score-comment" id="scoreComment">Luar Biasa!</div>
+                            
+                            <div class="score-timer" id="autoBackTimer">Kembali ke Home dalam 7s...</div>
+
+                            <button class="btn-close-score" onclick="closeScoreNow()">
+                                KEMBALI SEKARANG
+                            </button>
+                        </div>
+
+                        <div id="errorOverlay" class="error-overlay">
+                            <i class="fas fa-exclamation-triangle" style="font-size:3rem; color:var(--error); margin-bottom:15px;"></i>
+                            <h3>Video Dibatasi</h3>
+                            <p style="color:#aaa;">Video ini dibatasi oleh YouTube.</p>
+                            <a id="fallbackLink" href="#" target="_blank" class="btn-redirect">Buka di YouTube</a>
+                            <button onclick="playNextInQueue()" style="margin-top:15px; padding:10px 20px; background:none; border:1px solid white; color:white; border-radius:4px; cursor:pointer;">Lewati</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="player-controls">
+                    <div class="now-playing-card">
+                        <div class="now-playing-label" style="font-size:0.8rem; color:var(--text-dim); font-weight:bold;">SEDANG DIPUTAR</div>
+                        <div class="now-playing-title" id="nowPlayingTitle">Siap Bernyanyi...</div>
+                    </div>
+
+                    <div class="visualizer" id="visualizer">
+                        <div class="bar" style="animation-delay: 0.1s"></div>
+                        <div class="bar" style="animation-delay: 0.3s"></div>
+                        <div class="bar" style="animation-delay: 0.5s"></div>
+                        <div class="bar" style="animation-delay: 0.2s"></div>
+                        <div class="bar" style="animation-delay: 0.4s"></div>
+                        <div class="bar" style="animation-delay: 0.1s"></div>
+                        <div class="bar" style="animation-delay: 0.3s"></div>
+                        <div class="bar" style="animation-delay: 0.5s"></div>
+                    </div>
+
+                    <button class="ctrl-btn primary" onclick="forceFinishSong()" style="width:100%; font-weight:bold; background:var(--gold); color:black;">
+                        <i class="fas fa-trophy"></i> SELESAI (CEK SKOR)
+                    </button>
+
+                    <div class="control-grid">
+                        <button class="ctrl-btn" onclick="toggleCinemaMode()"><i class="fas fa-lightbulb"></i> Cinema</button>
+                        <button class="ctrl-btn" onclick="replaySong()"><i class="fas fa-redo"></i> Replay</button>
+                    </div>
+                    
+                    <button class="ctrl-btn" onclick="playNextInQueue()" style="width:100%;">
+                        <i class="fas fa-step-forward"></i> SKIP / LEWATI
+                    </button>
+
+                    <div class="slider-group">
+                        <div class="slider-label"><span>Tempo</span><span id="speedVal">1.0x</span></div>
+                        <input type="range" min="0.5" max="1.5" step="0.05" value="1" oninput="changeSpeed(this.value)">
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-label"><span>Volume</span><span id="volVal">100%</span></div>
+                        <input type="range" min="0" max="100" value="100" oninput="changeVolume(this.value)">
+                    </div>
+
+                    <div class="stats-box">
+                        <div class="stat-item"><div class="stat-val" id="queueCountDisplay">0</div><div class="stat-lbl">Antrian</div></div>
+                        <div class="stat-item"><div class="stat-val" id="sungCount">0</div><div class="stat-lbl">Lagu Selesai</div></div>
+                        <div class="stat-item"><div class="stat-val" id="totalDurationDisplay">0m</div><div class="stat-lbl">Durasi</div></div>
                     </div>
                 </div>
             </div>
-
-            <div class="player-controls">
-                <div class="now-playing-card">
-                    <div class="now-playing-label">SEDANG DIPUTAR</div>
-                    <div class="now-playing-title" id="nowPlayingTitle">Siap Bernyanyi...</div>
-                </div>
-
-                <div class="visualizer" id="visualizer">
-                    <div class="bar" style="animation-delay: 0.1s"></div>
-                    <div class="bar" style="animation-delay: 0.3s"></div>
-                    <div class="bar" style="animation-delay: 0.5s"></div>
-                    <div class="bar" style="animation-delay: 0.2s"></div>
-                    <div class="bar" style="animation-delay: 0.4s"></div>
-                    <div class="bar" style="animation-delay: 0.1s"></div>
-                    <div class="bar" style="animation-delay: 0.3s"></div>
-                    <div class="bar" style="animation-delay: 0.5s"></div>
-                </div>
-
-                <button class="ctrl-btn primary" onclick="forceFinishSong()" style="width:100%; font-weight:bold; background:var(--gold); color:black;">
-                    <i class="fas fa-trophy"></i> SELESAI (CEK SKOR)
-                </button>
-
-                <div class="control-grid">
-                    <button class="ctrl-btn" onclick="toggleCinemaMode()"><i class="fas fa-lightbulb"></i> Cinema</button>
-                    <button class="ctrl-btn" onclick="replaySong()"><i class="fas fa-redo"></i> Replay</button>
-                </div>
-                
-                <button class="ctrl-btn" onclick="playNextInQueue()" style="width:100%;">
-                    <i class="fas fa-step-forward"></i> SKIP / LEWATI
-                </button>
-
-                <div class="slider-group">
-                    <div class="slider-label"><span>Tempo</span><span id="speedVal">1.0x</span></div>
-                    <input type="range" min="0.5" max="1.5" step="0.05" value="1" oninput="changeSpeed(this.value)">
-                </div>
-
-                <div class="slider-group">
-                    <div class="slider-label"><span>Volume</span><span id="volVal">100%</span></div>
-                    <input type="range" min="0" max="100" value="100" oninput="changeVolume(this.value)">
-                </div>
-
-                <div class="stats-box">
-                    <div class="stat-item"><div class="stat-val" id="queueCountDisplay">0</div><div class="stat-lbl">Antrian</div></div>
-                    <div class="stat-item"><div class="stat-val" id="sungCount">0</div><div class="stat-lbl">Lagu Selesai</div></div>
-                    <div class="stat-item"><div class="stat-val" id="totalDurationDisplay">0m</div><div class="stat-lbl">Durasi</div></div>
-                </div>
-            </div>
         </div>
-
-        <div class="sticky-search">
-            <div class="search-wrapper">
-                <input type="text" id="searchInput" placeholder="Cari artis atau judul lagu..." onkeypress="handleEnter(event)">
-                <div class="search-actions">
-                    <button class="btn-action-search btn-mic" id="micBtn" onclick="startVoiceSearch()" title="Ketik Suara">
-                        <i class="fas fa-microphone"></i>
-                    </button>
-                    <button class="btn-action-search btn-go" onclick="performSearch()" title="Cari">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="nav-tabs">
-            <button class="nav-btn active" onclick="switchTab('home')"><i class="fas fa-home"></i> Home</button>
-            <button class="nav-btn" onclick="switchTab('search')"><i class="fas fa-list"></i> Hasil Cari</button>
-            <button class="nav-btn" onclick="switchTab('queue')"><i class="fas fa-list-ol"></i> Antrian</button>
-            <button class="nav-btn" onclick="switchTab('favorites')"><i class="fas fa-heart"></i> Favorit</button>
-        </div>
-
-        <div id="home" class="content-section active"><h3 style="margin-bottom:15px; color:var(--accent);">🔥 Top Hits Karaoke</h3><div class="song-grid" id="featuredGrid"></div></div>
-        <div id="search" class="content-section"><ul class="list-view" id="searchResults"><li class="empty-msg">Hasil pencarian akan muncul di sini.</li></ul></div>
-        <div id="queue" class="content-section">
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px;"><h3><i class="fas fa-list-ol"></i> Daftar Antrian</h3><button onclick="clearQueue()" style="color:var(--error); background:none; border:none; cursor:pointer; font-size:1rem;">Hapus Semua</button></div>
-            <ul class="list-view" id="queueList"><li class="empty-msg">Antrian kosong.</li></ul>
-        </div>
-        <div id="favorites" class="content-section"><h3 style="margin-bottom:15px; color:var(--primary);">❤️ Koleksi Favorit</h3><div class="song-grid" id="favoritesGrid"></div></div>
     </div>
 
     <script>
         // CONFIG
-        const API_KEY = 'AIzaSyDI4Q4h3EkiH7mQzeQz7AygoMmvv_sRbBs';
+        const API_KEY = 'AIzaSyDI4Q4h3EkiH7mQzeQz7AygoMmvv_sRbBs'; // KEY ANDA
         const FEATURED_SONGS = [
             { id: "TI3CbrMW_g0", title: "Bertaut", artist: "Nadin Amizah" },
             { id: "KOJ_Sy3-Ga0", title: "Seandainya", artist: "Vierra" },
@@ -390,11 +344,40 @@
 
         let player, queue = [], favorites = JSON.parse(localStorage.getItem('aw_favorites')) || [];
         let currentVideoId = '', songsSungSession = 0, totalSecondsSung = 0, singingInterval;
+        let countdownInterval; 
+
+        // --- VIEW SWITCHER ---
+        function goToPlayer() {
+            document.getElementById('landing-view').style.display = 'none';
+            document.getElementById('player-view').style.display = 'block';
+            window.scrollTo(0,0);
+        }
+
+        function goToHome() {
+            // Stop video
+            if(player && player.stopVideo) player.stopVideo();
+            
+            // Reset View
+            document.getElementById('player-view').style.display = 'none';
+            document.getElementById('landing-view').style.display = 'block';
+            
+            // --- FITUR BARU: AUTO CLEAR SEARCH ---
+            document.getElementById('searchInput').value = ''; // Kosongkan search
+            switchTab('home'); // Reset ke tampilan Home agar segar
+            
+            // Reset mode cinema
+            document.body.classList.remove('cinema-mode');
+            // Hide score
+            document.getElementById('scoreModal').style.display = 'none';
+            // Stop timers
+            clearInterval(countdownInterval);
+            stopSingingTimer();
+        }
 
         // --- VOICE SEARCH ---
         function startVoiceSearch() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert("Browser TV ini belum mendukung Voice Typing. Gunakan keyboard.");
+                alert("Browser ini belum mendukung Voice Typing. Gunakan keyboard.");
                 return;
             }
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -411,25 +394,18 @@
                 document.getElementById('searchInput').value = speechResult;
                 performSearch(); 
             };
-            recognition.onerror = function(event) {
-                micBtn.classList.remove('listening');
-                alert("Suara tidak terdengar. Coba lagi.");
-            };
             recognition.start();
         }
 
-        // --- FULLSCREEN ---
+        // --- UTILS ---
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    alert(`Gagal masuk mode fullscreen: ${err.message}`);
-                });
+                document.documentElement.requestFullscreen().catch(err => { console.log(err); });
             } else {
                 document.exitFullscreen();
             }
         }
 
-        // --- CLOCK & TIMER ---
         setInterval(() => {
             document.querySelector('#clockDisplay span').textContent = new Date().toLocaleTimeString('id-ID', { hour12: false });
         }, 1000);
@@ -477,22 +453,44 @@
             }
         }
 
-        // --- SCORING ---
+        // --- SCORING & AUTO BACK ---
         function showScore() {
             const score = Math.floor(Math.random() * (100 - 75 + 1)) + 75;
             const comments = ["Luar Biasa!", "Suara Emas!", "Mantap!", "Calon Idol!", "Gokil!", "Perfect!"];
+            
             document.getElementById('scoreVal').textContent = score;
             document.getElementById('scoreComment').textContent = comments[Math.floor(Math.random() * comments.length)];
             document.getElementById('scoreModal').style.display = 'flex';
+
+            // --- HITUNG MUNDUR 7 DETIK KE HOME ---
+            let timeLeft = 7;
+            const timerDisplay = document.getElementById('autoBackTimer');
+            timerDisplay.textContent = `Kembali ke Home dalam ${timeLeft}s...`;
+
+            clearInterval(countdownInterval); 
+            countdownInterval = setInterval(() => {
+                timeLeft--;
+                if(timeLeft > 0) {
+                    timerDisplay.textContent = `Kembali ke Home dalam ${timeLeft}s...`;
+                } else {
+                    clearInterval(countdownInterval);
+                    closeScoreNow(); 
+                }
+            }, 1000);
         }
-        function closeScore() {
+
+        function closeScoreNow() {
+            clearInterval(countdownInterval); 
             document.getElementById('scoreModal').style.display = 'none';
-            songsSungSession++; document.getElementById('sungCount').textContent = songsSungSession;
-            playNextInQueue();
+            songsSungSession++; 
+            document.getElementById('sungCount').textContent = songsSungSession;
+            goToHome(); 
         }
+
         function forceFinishSong() {
             if (player && player.getPlayerState() === YT.PlayerState.PLAYING) {
-                player.pauseVideo(); showScore();
+                player.pauseVideo(); 
+                showScore();
             } else { alert("Putar lagu dulu!"); }
         }
 
@@ -500,26 +498,35 @@
         function playSong(song, instant = false) {
             document.getElementById('errorOverlay').style.display = 'none';
             document.getElementById('scoreModal').style.display = 'none';
+            
             if (instant) {
-                currentVideoId = song.id; player.loadVideoById(song.id);
+                goToPlayer();
+                currentVideoId = song.id; 
+                player.loadVideoById(song.id);
                 document.getElementById('nowPlayingTitle').textContent = song.title;
             } else {
                 queue.push(song); updateQueueUI();
                 const qTab = document.querySelector("button[onclick*='queue']");
                 qTab.style.background = "var(--accent)"; qTab.style.color="black";
-                setTimeout(() => { qTab.style.background = ""; qTab.style.color=""; }, 300);
-                if (player.getPlayerState() === -1 || player.getPlayerState() === 0 || player.getPlayerState() === 5) playNextInQueue();
+                setTimeout(() => { 
+                    if(!qTab.classList.contains('active')) {
+                        qTab.style.background = ""; qTab.style.color=""; 
+                    }
+                }, 300);
             }
         }
+
         function playNextInQueue() {
             document.getElementById('errorOverlay').style.display = 'none';
             if (queue.length > 0) {
-                const next = queue.shift(); currentVideoId = next.id;
-                player.loadVideoById(next.id); document.getElementById('nowPlayingTitle').textContent = next.title;
+                const next = queue.shift(); 
+                goToPlayer();
+                currentVideoId = next.id;
+                player.loadVideoById(next.id); 
+                document.getElementById('nowPlayingTitle').textContent = next.title;
                 updateQueueUI();
             } else {
-                document.getElementById('nowPlayingTitle').textContent = "Antrian Habis.";
-                stopSingingTimer();
+                goToHome();
             }
         }
 
@@ -540,11 +547,13 @@
                 const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(q + " karaoke no vocal")}&type=video&key=${API_KEY}`);
                 const data = await res.json();
                 list.innerHTML = '';
-                if (data.items.length === 0) list.innerHTML = '<li class="empty-msg">Tidak ditemukan.</li>';
-                data.items.forEach(item => {
-                    const song = { id: item.id.videoId, title: item.snippet.title, artist: item.snippet.channelTitle };
-                    list.appendChild(createListItem(song, 'search'));
-                });
+                if (!data.items || data.items.length === 0) list.innerHTML = '<li class="empty-msg">Tidak ditemukan.</li>';
+                else {
+                    data.items.forEach(item => {
+                        const song = { id: item.id.videoId, title: item.snippet.title, artist: item.snippet.channelTitle };
+                        list.appendChild(createListItem(song, 'search'));
+                    });
+                }
             } catch (e) { list.innerHTML = `<li class="empty-msg" style="color:red">Error: ${e.message}</li>`; }
         }
 
