@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A&W Karaoke Hub - TV Ultimate</title>
+    <title>A&W Karaoke Hub - TV Ultimate (Auto Fullscreen)</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -30,6 +30,26 @@
         }
 
         .container { width: 100%; max-width: 1400px; display: flex; flex-direction: column; gap: 20px; z-index: 1; }
+
+        /* FITUR BARU: START OVERLAY (Untuk Trigger Fullscreen) */
+        #startOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; transition: opacity 0.5s;
+        }
+        .start-logo {
+            font-family: 'Orbitron', sans-serif; font-size: 4rem;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 20px; text-transform: uppercase; letter-spacing: 5px;
+            text-align: center;
+        }
+        .tap-text {
+            color: white; font-size: 1.2rem; animation: pulseText 1.5s infinite;
+            font-family: 'Orbitron'; letter-spacing: 2px;
+        }
+        @keyframes pulseText { 0% { opacity: 0.5; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
 
         /* HEADER */
         header {
@@ -74,17 +94,24 @@
         #player-view { display: none; }
         #landing-view { display: block; animation: fadeIn 0.5s; }
         
-        .btn-back-home {
+        /* Navigation Buttons in Player */
+        .player-nav { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
+
+        .btn-nav {
             background: #333; color: white; border: 1px solid white;
             padding: 10px 20px; border-radius: 8px; cursor: pointer;
             display: flex; align-items: center; gap: 10px; font-weight: bold;
-            margin-bottom: 15px; width: fit-content;
+            font-size: 1rem; transition: 0.3s;
         }
-        .btn-back-home:hover { background: var(--accent); color: black; border-color: var(--accent); }
+        .btn-nav:hover { background: var(--accent); color: black; border-color: var(--accent); }
+        .btn-nav.primary-action { background: var(--accent); color: black; border: none; }
+        .btn-nav.primary-action:hover { background: white; box-shadow: 0 0 15px var(--accent); }
 
         /* PLAYER LAYOUT */
-        .stage-wrapper { display: grid; grid-template-columns: 2.8fr 1fr; gap: 25px; }
+        .stage-wrapper { display: grid; grid-template-columns: 2.8fr 1fr; gap: 25px; align-items: start; }
         @media(max-width: 900px) { .stage-wrapper { grid-template-columns: 1fr; } }
+
+        .left-column { display: flex; flex-direction: column; gap: 20px; }
 
         .video-container {
             position: relative; width: 100%; padding-top: 56.25%;
@@ -100,7 +127,36 @@
         @keyframes pulseGlow { 0% { opacity: 0.3; } 100% { opacity: 0.6; } }
         #youtube-player { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
-        /* SCORE MODAL & COUNTDOWN */
+        /* MINI QUEUE BAR */
+        .mini-queue-box {
+            background: linear-gradient(90deg, #1a1a20, #25252d);
+            border: 1px solid #333; border-radius: 12px;
+            padding: 15px 20px; display: flex; flex-direction: column; gap: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .mq-header { 
+            font-size: 0.9rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; 
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .mq-list {
+            display: flex; gap: 15px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: thin;
+        }
+        .mq-list::-webkit-scrollbar { height: 6px; }
+        .mq-list::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+        
+        .mq-item {
+            background: #333; padding: 8px 15px; border-radius: 20px; 
+            font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; gap: 10px;
+            border: 1px solid transparent; min-width: max-content;
+        }
+        .mq-item i { color: var(--text-dim); font-size: 0.8rem; }
+        .mq-item:first-child { 
+            background: rgba(0, 229, 255, 0.15); border-color: var(--accent); color: white; 
+        }
+        .mq-item:first-child i { color: var(--accent); }
+        .mq-empty { font-style: italic; color: #555; padding: 5px 0; }
+
+        /* SCORE MODAL */
         .score-modal {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.95); z-index: 50;
@@ -153,6 +209,7 @@
         .sticky-search { position: sticky; top: 0; z-index: 80; background: var(--bg-dark); padding: 15px 0; border-bottom: 1px solid #333; }
         .search-wrapper { position: relative; display: flex; gap: 10px; align-items: center; }
         input[type="text"] { width: 100%; padding: 18px 25px; padding-right: 120px; border-radius: 50px; border: 2px solid #333; background: #2a2a35; color: white; font-size: 1.2rem; }
+        input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(0, 229, 255, 0.3); outline: none; }
         .search-actions { position: absolute; right: 5px; top: 5px; bottom: 5px; display: flex; gap: 5px; }
         .btn-action-search { width: 50px; height: 100%; border-radius: 50%; border: none; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .btn-mic { background: #333; color: white; }
@@ -178,6 +235,9 @@
         .list-thumb { width: 120px; height: 68px; object-fit: cover; border-radius: 6px; }
         .empty-msg { text-align: center; color: var(--text-dim); padding: 50px; font-size: 1.2rem; }
         .action-btn { background: transparent; border: none; color: var(--text-dim); cursor: pointer; font-size: 1.3rem; padding: 5px; }
+        .action-btn.btn-redirect {
+            background: var(--accent); color: black; padding: 10px 20px; border-radius: 5px; font-size: 1rem; font-weight: bold; text-decoration: none; display: inline-block;
+        }
         .action-btn:hover { color: white; transform: scale(1.1); }
         .action-btn.liked { color: var(--primary); }
 
@@ -185,11 +245,16 @@
         #cinemaOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 90; display: none; pointer-events: none; }
         body.cinema-mode #cinemaOverlay { display: block; }
         body.cinema-mode .video-container { z-index: 100; transform: scale(1.1); }
-        body.cinema-mode .btn-back-home { opacity: 0; pointer-events: none; }
+        body.cinema-mode .player-nav, body.cinema-mode .mini-queue-box { opacity: 0; pointer-events: none; }
 
     </style>
 </head>
 <body>
+
+    <div id="startOverlay" onclick="enterSystem()">
+        <div class="start-logo">A&W KARAOKE<br><span style="font-size:0.5em; color:white;"> SYSTEM BY KV</span></div>
+        <div class="tap-text"><i class="fas fa-play"></i> KLIK LAYAR UNTUK MEMULAI</div>
+    </div>
 
     <div id="cinemaOverlay"></div>
 
@@ -209,7 +274,7 @@
         <div id="landing-view">
             <div class="marquee-container">
                 <div class="marquee-text" id="marqueeText">
-                 SELAMAT DATANG DI A&W KARAOKE HUB TV EDITION | GUNAKAN MIC UNTUK MENCARI LAGU | SELAMAT BERNYANYI |
+                 SELAMAT DATANG DI A&W KARAOKE HUB EDITION | GUNAKAN MICROPHONE REMOTE UNTUK MENCARI LAGU | SELAMAT BERNYANYI |
                 </div>
             </div>
 
@@ -244,34 +309,58 @@
         </div>
 
         <div id="player-view">
-            <button class="btn-back-home" onclick="goToHome()">
-                <i class="fas fa-arrow-left"></i> Kembali ke Home
-            </button>
+            <div class="player-nav">
+                <button class="btn-nav" onclick="goToHome()">
+                    <i class="fas fa-arrow-left"></i> Menu Utama (Reset)
+                </button>
+                <button class="btn-nav primary-action" onclick="backToSearch()">
+                    <i class="fas fa-search"></i> Pilih Klip Lain
+                </button>
+            </div>
 
             <div class="stage-wrapper">
-                <div style="position:relative;">
-                    <div class="ambient-glow"></div>
-                    <div class="video-container">
-                        <div id="youtube-player"></div>
-                        
-                        <div class="score-modal" id="scoreModal">
-                            <div class="score-title" style="color:#fff; font-size:1.5rem; margin-bottom:10px;">SKOR PERFORMA ANDA</div>
-                            <div class="score-circle" id="scoreVal">0</div>
-                            <div class="score-comment" id="scoreComment">Luar Biasa!</div>
+                <div class="left-column">
+                    <div style="position:relative;">
+                        <div class="ambient-glow"></div>
+                        <div class="video-container">
+                            <div id="youtube-player"></div>
                             
-                            <div class="score-timer" id="autoBackTimer">Kembali ke Home dalam 7s...</div>
+                            <div class="score-modal" id="scoreModal">
+                                <div class="score-title" style="color:#fff; font-size:1.5rem; margin-bottom:10px;">SKOR PERFORMA ANDA</div>
+                                <div class="score-circle" id="scoreVal">0</div>
+                                <div class="score-comment" id="scoreComment">Luar Biasa!</div>
+                                <div class="score-timer" id="autoBackTimer">Kembali ke Home dalam 7s...</div>
+                                <button class="btn-close-score" onclick="closeScoreNow()">
+                                    KEMBALI SEKARANG
+                                </button>
+                            </div>
 
-                            <button class="btn-close-score" onclick="closeScoreNow()">
-                                KEMBALI SEKARANG
-                            </button>
+                            <div id="errorOverlay" class="error-overlay">
+                                <i class="fas fa-exclamation-triangle" style="font-size:3rem; color:var(--error); margin-bottom:15px;"></i>
+                                <h3>Video Tidak Tersedia</h3>
+                                <p style="color:#aaa; margin-bottom:20px;">Video ini dibatasi atau tidak bisa diputar.</p>
+                                <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+                                    <button onclick="backToSearch()" class="btn-nav primary-action">
+                                        <i class="fas fa-undo"></i> Pilih Klip Lain
+                                    </button>
+                                    <a id="fallbackLink" href="#" target="_blank" class="btn-nav">
+                                        <i class="fab fa-youtube"></i> Buka di YouTube
+                                    </a>
+                                </div>
+                                <button onclick="playNextInQueue()" style="margin-top:20px; padding:10px 20px; background:none; border:none; color:white; text-decoration:underline; cursor:pointer;">
+                                    Lewati ke Lagu Berikutnya
+                                </button>
+                            </div>
                         </div>
+                    </div>
 
-                        <div id="errorOverlay" class="error-overlay">
-                            <i class="fas fa-exclamation-triangle" style="font-size:3rem; color:var(--error); margin-bottom:15px;"></i>
-                            <h3>Video Dibatasi</h3>
-                            <p style="color:#aaa;">Video ini dibatasi oleh YouTube.</p>
-                            <a id="fallbackLink" href="#" target="_blank" class="btn-redirect">Buka di YouTube</a>
-                            <button onclick="playNextInQueue()" style="margin-top:15px; padding:10px 20px; background:none; border:1px solid white; color:white; border-radius:4px; cursor:pointer;">Lewati</button>
+                    <div class="mini-queue-box">
+                        <div class="mq-header">
+                            <span><i class="fas fa-list-ul"></i> Selanjutnya (Next Up)</span>
+                            <span style="font-size:0.8rem; color:var(--accent);">Tambahkan di tab Antrian</span>
+                        </div>
+                        <div class="mq-list" id="miniQueueList">
+                            <div class="mq-empty">Tidak ada lagu dalam antrian.</div>
                         </div>
                     </div>
                 </div>
@@ -346,35 +435,56 @@
         let currentVideoId = '', songsSungSession = 0, totalSecondsSung = 0, singingInterval;
         let countdownInterval; 
 
-        // --- VIEW SWITCHER ---
+        // --- FUNGSI START SISTEM (TRIGGER FULLSCREEN) ---
+        function enterSystem() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen().catch(err => console.log(err));
+            } else if (elem.webkitRequestFullscreen) { /* Safari */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE11 */
+                elem.msRequestFullscreen();
+            }
+
+            // Hilangkan overlay dengan efek fade out
+            const overlay = document.getElementById('startOverlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 500);
+        }
+
         function goToPlayer() {
             document.getElementById('landing-view').style.display = 'none';
             document.getElementById('player-view').style.display = 'block';
             window.scrollTo(0,0);
         }
 
-        function goToHome() {
-            // Stop video
+        function resetPlayerState() {
             if(player && player.stopVideo) player.stopVideo();
-            
-            // Reset View
             document.getElementById('player-view').style.display = 'none';
             document.getElementById('landing-view').style.display = 'block';
-            
-            // --- FITUR BARU: AUTO CLEAR SEARCH ---
-            document.getElementById('searchInput').value = ''; // Kosongkan search
-            switchTab('home'); // Reset ke tampilan Home agar segar
-            
-            // Reset mode cinema
             document.body.classList.remove('cinema-mode');
-            // Hide score
             document.getElementById('scoreModal').style.display = 'none';
-            // Stop timers
+            document.getElementById('errorOverlay').style.display = 'none';
             clearInterval(countdownInterval);
             stopSingingTimer();
         }
 
-        // --- VOICE SEARCH ---
+        function goToHome() {
+            resetPlayerState();
+            const searchInput = document.getElementById('searchInput');
+            searchInput.value = ''; 
+            switchTab('home'); 
+            setTimeout(() => { searchInput.focus(); }, 500);
+        }
+
+        function backToSearch() {
+            resetPlayerState();
+            switchTab('search');
+            setTimeout(() => { document.getElementById('searchInput').focus(); }, 500);
+        }
+
         function startVoiceSearch() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
                 alert("Browser ini belum mendukung Voice Typing. Gunakan keyboard.");
@@ -385,7 +495,6 @@
             recognition.lang = 'id-ID';
             recognition.interimResults = false;
             recognition.maxAlternatives = 1;
-
             const micBtn = document.getElementById('micBtn');
             recognition.onstart = function() { micBtn.classList.add('listening'); };
             recognition.onend = function() { micBtn.classList.remove('listening'); };
@@ -397,7 +506,6 @@
             recognition.start();
         }
 
-        // --- UTILS ---
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => { console.log(err); });
@@ -420,7 +528,6 @@
             document.getElementById('totalDurationDisplay').textContent = `${m}m ${totalSecondsSung % 60}s`;
         }
 
-        // --- YOUTUBE API ---
         const tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
         document.getElementsByTagName('script')[0].parentNode.insertBefore(tag, document.getElementsByTagName('script')[0]);
 
@@ -453,29 +560,20 @@
             }
         }
 
-        // --- SCORING & AUTO BACK ---
         function showScore() {
             const score = Math.floor(Math.random() * (100 - 75 + 1)) + 75;
             const comments = ["Luar Biasa!", "Suara Emas!", "Mantap!", "Calon Idol!", "Gokil!", "Perfect!"];
-            
             document.getElementById('scoreVal').textContent = score;
             document.getElementById('scoreComment').textContent = comments[Math.floor(Math.random() * comments.length)];
             document.getElementById('scoreModal').style.display = 'flex';
-
-            // --- HITUNG MUNDUR 7 DETIK KE HOME ---
             let timeLeft = 7;
             const timerDisplay = document.getElementById('autoBackTimer');
             timerDisplay.textContent = `Kembali ke Home dalam ${timeLeft}s...`;
-
             clearInterval(countdownInterval); 
             countdownInterval = setInterval(() => {
                 timeLeft--;
-                if(timeLeft > 0) {
-                    timerDisplay.textContent = `Kembali ke Home dalam ${timeLeft}s...`;
-                } else {
-                    clearInterval(countdownInterval);
-                    closeScoreNow(); 
-                }
+                if(timeLeft > 0) timerDisplay.textContent = `Kembali ke Home dalam ${timeLeft}s...`;
+                else { clearInterval(countdownInterval); closeScoreNow(); }
             }, 1000);
         }
 
@@ -494,7 +592,6 @@
             } else { alert("Putar lagu dulu!"); }
         }
 
-        // --- PLAYER LOGIC ---
         function playSong(song, instant = false) {
             document.getElementById('errorOverlay').style.display = 'none';
             document.getElementById('scoreModal').style.display = 'none';
@@ -535,7 +632,6 @@
         function changeVolume(val) { player.setVolume(val); document.getElementById('volVal').textContent = val + "%"; }
         function toggleCinemaMode() { document.body.classList.toggle('cinema-mode'); }
 
-        // --- SEARCH & UI ---
         function handleEnter(e) { if (e.key === 'Enter') performSearch(); }
         async function performSearch() {
             const q = document.getElementById('searchInput').value.trim();
@@ -586,13 +682,28 @@
 
         function updateQueueUI() {
             document.getElementById('queueCountDisplay').textContent = queue.length;
+            
             const list = document.getElementById('queueList'); list.innerHTML = '';
-            if (queue.length === 0) { list.innerHTML = '<li class="empty-msg">Antrian kosong.</li>'; return; }
-            queue.forEach((s, i) => {
-                const li = document.createElement('li'); li.className = 'list-item';
-                li.innerHTML = `<b style="color:var(--accent); margin-right:10px;">${i+1}</b><div style="flex:1;">${s.title}</div><button class="action-btn" style="color:var(--error);" onclick="queue.splice(${i},1); updateQueueUI();"><i class="fas fa-trash"></i></button>`;
-                list.appendChild(li);
-            });
+            if (queue.length === 0) { list.innerHTML = '<li class="empty-msg">Antrian kosong.</li>'; }
+            else {
+                queue.forEach((s, i) => {
+                    const li = document.createElement('li'); li.className = 'list-item';
+                    li.innerHTML = `<b style="color:var(--accent); margin-right:10px;">${i+1}</b><div style="flex:1;">${s.title}</div><button class="action-btn" style="color:var(--error);" onclick="queue.splice(${i},1); updateQueueUI();"><i class="fas fa-trash"></i></button>`;
+                    list.appendChild(li);
+                });
+            }
+
+            const miniList = document.getElementById('miniQueueList');
+            miniList.innerHTML = '';
+            if (queue.length === 0) {
+                miniList.innerHTML = '<div class="mq-empty">Antrian kosong. Tambahkan lagu sekarang!</div>';
+            } else {
+                queue.forEach((s, i) => {
+                    const div = document.createElement('div'); div.className = 'mq-item';
+                    div.innerHTML = `<i class="fas fa-music"></i> ${i+1}. ${s.title.substring(0, 20)}...`;
+                    miniList.appendChild(div);
+                });
+            }
         }
 
         function toggleFavorite(song) {
