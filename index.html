@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A&W Karaoke Hub - TV Ultimate (Auto Fullscreen)</title>
+    <title>A&W Karaoke Hub - TV Ultimate (Final Logic)</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -31,7 +31,7 @@
 
         .container { width: 100%; max-width: 1400px; display: flex; flex-direction: column; gap: 20px; z-index: 1; }
 
-        /* FITUR BARU: START OVERLAY (Untuk Trigger Fullscreen) */
+        /* START OVERLAY */
         #startOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 9999;
@@ -94,9 +94,7 @@
         #player-view { display: none; }
         #landing-view { display: block; animation: fadeIn 0.5s; }
         
-        /* Navigation Buttons in Player */
         .player-nav { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
-
         .btn-nav {
             background: #333; color: white; border: 1px solid white;
             padding: 10px 20px; border-radius: 8px; cursor: pointer;
@@ -252,7 +250,7 @@
 <body>
 
     <div id="startOverlay" onclick="enterSystem()">
-        <div class="start-logo">A&W KARAOKE<br><span style="font-size:0.5em; color:white;"> SYSTEM BY KV</span></div>
+        <div class="start-logo">A&W KARAOKE<br><span style="font-size:0.5em; color:white;">SYSTEM by kv</span></div>
         <div class="tap-text"><i class="fas fa-play"></i> KLIK LAYAR UNTUK MEMULAI</div>
     </div>
 
@@ -274,7 +272,7 @@
         <div id="landing-view">
             <div class="marquee-container">
                 <div class="marquee-text" id="marqueeText">
-                 SELAMAT DATANG DI A&W KARAOKE HUB EDITION | GUNAKAN MICROPHONE REMOTE UNTUK MENCARI LAGU | SELAMAT BERNYANYI |
+                 SELAMAT DATANG DI A&W KARAOKE HUB BY KV Ver 5.6 | GUNAKAN MIC Remote UNTUK MENCARI LAGU | SELAMAT BERNYANYI |
                 </div>
             </div>
 
@@ -331,7 +329,7 @@
                                 <div class="score-comment" id="scoreComment">Luar Biasa!</div>
                                 <div class="score-timer" id="autoBackTimer">Kembali ke Home dalam 7s...</div>
                                 <button class="btn-close-score" onclick="closeScoreNow()">
-                                    KEMBALI SEKARANG
+                                    LANJUT
                                 </button>
                             </div>
 
@@ -433,7 +431,10 @@
 
         let player, queue = [], favorites = JSON.parse(localStorage.getItem('aw_favorites')) || [];
         let currentVideoId = '', songsSungSession = 0, totalSecondsSung = 0, singingInterval;
-        let countdownInterval; 
+        let countdownInterval;
+        
+        // VARIABLE BARU UNTUK MENCEGAH DOUBLE COUNTING
+        let isScoring = false; 
 
         // --- FUNGSI START SISTEM (TRIGGER FULLSCREEN) ---
         function enterSystem() {
@@ -469,6 +470,7 @@
             document.getElementById('errorOverlay').style.display = 'none';
             clearInterval(countdownInterval);
             stopSingingTimer();
+            isScoring = false; // Reset flag scoring
         }
 
         function goToHome() {
@@ -548,7 +550,7 @@
             }
             if (event.data === YT.PlayerState.ENDED) {
                 stopSingingTimer();
-                showScore(); 
+                showScore(); // Ini memanggil showScore otomatis
             }
         }
 
@@ -560,29 +562,53 @@
             }
         }
 
+        // --- PERBAIKAN LOGIKA SCORE & COUNTING ---
         function showScore() {
+            // Cek jika scoring sedang aktif, jangan jalankan lagi (mencegah double trigger)
+            if (isScoring) return;
+            isScoring = true;
+
             const score = Math.floor(Math.random() * (100 - 75 + 1)) + 75;
             const comments = ["Luar Biasa!", "Suara Emas!", "Mantap!", "Calon Idol!", "Gokil!", "Perfect!"];
+            
             document.getElementById('scoreVal').textContent = score;
             document.getElementById('scoreComment').textContent = comments[Math.floor(Math.random() * comments.length)];
             document.getElementById('scoreModal').style.display = 'flex';
+
+            // Hitung mundur untuk auto close
             let timeLeft = 7;
             const timerDisplay = document.getElementById('autoBackTimer');
-            timerDisplay.textContent = `Kembali ke Home dalam ${timeLeft}s...`;
+            // Cek antrian untuk menentukan pesan
+            const nextActionText = (queue.length > 0) ? "Lanjut ke lagu berikutnya" : "Kembali ke Home";
+            timerDisplay.textContent = `${nextActionText} dalam ${timeLeft}s...`;
+
             clearInterval(countdownInterval); 
             countdownInterval = setInterval(() => {
                 timeLeft--;
-                if(timeLeft > 0) timerDisplay.textContent = `Kembali ke Home dalam ${timeLeft}s...`;
-                else { clearInterval(countdownInterval); closeScoreNow(); }
+                if(timeLeft > 0) {
+                    timerDisplay.textContent = `${nextActionText} dalam ${timeLeft}s...`;
+                } else {
+                    clearInterval(countdownInterval);
+                    closeScoreNow(); 
+                }
             }, 1000);
         }
 
         function closeScoreNow() {
             clearInterval(countdownInterval); 
             document.getElementById('scoreModal').style.display = 'none';
+            
+            // 1. Tambah hitungan lagu selesai
             songsSungSession++; 
             document.getElementById('sungCount').textContent = songsSungSession;
-            goToHome(); 
+            
+            // 2. LOGIKA BARU: Cek Antrian
+            // Jika ada antrian, putar lagu berikutnya. Jika tidak, balik ke Home.
+            if (queue.length > 0) {
+                playNextInQueue();
+            } else {
+                goToHome(); 
+            }
         }
 
         function forceFinishSong() {
@@ -592,9 +618,11 @@
             } else { alert("Putar lagu dulu!"); }
         }
 
+        // --- PLAYER LOGIC ---
         function playSong(song, instant = false) {
             document.getElementById('errorOverlay').style.display = 'none';
             document.getElementById('scoreModal').style.display = 'none';
+            isScoring = false; // Reset flag setiap kali main lagu baru
             
             if (instant) {
                 goToPlayer();
@@ -615,9 +643,17 @@
 
         function playNextInQueue() {
             document.getElementById('errorOverlay').style.display = 'none';
+            document.getElementById('scoreModal').style.display = 'none';
+            isScoring = false; // Reset flag
+            
             if (queue.length > 0) {
                 const next = queue.shift(); 
-                goToPlayer();
+                // Kita tidak perlu goToPlayer() lagi jika sudah di player view, 
+                // tapi aman dipanggil untuk memastikan view benar.
+                if(document.getElementById('player-view').style.display === 'none') {
+                    goToPlayer();
+                }
+                
                 currentVideoId = next.id;
                 player.loadVideoById(next.id); 
                 document.getElementById('nowPlayingTitle').textContent = next.title;
@@ -627,11 +663,18 @@
             }
         }
 
-        function replaySong() { player.seekTo(0); player.playVideo(); }
+        function replaySong() { 
+            isScoring = false; // Reset flag
+            document.getElementById('scoreModal').style.display = 'none';
+            player.seekTo(0); 
+            player.playVideo(); 
+        }
+        
         function changeSpeed(val) { player.setPlaybackRate(parseFloat(val)); document.getElementById('speedVal').textContent = val + "x"; }
         function changeVolume(val) { player.setVolume(val); document.getElementById('volVal').textContent = val + "%"; }
         function toggleCinemaMode() { document.body.classList.toggle('cinema-mode'); }
 
+        // --- SEARCH & UI ---
         function handleEnter(e) { if (e.key === 'Enter') performSearch(); }
         async function performSearch() {
             const q = document.getElementById('searchInput').value.trim();
